@@ -1,49 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jhonatan Peña | Portafolio</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #121212;
-      color: #f2f2f2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 80px 20px;
-      text-align: center;
-    }
-    h1 {
-      color: #61dafb;
-      font-size: 40px;
-      margin-bottom: 10px;
-    }
-    p { font-size: 18px; max-width: 600px; }
-    a {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 18px;
-      border: 1px solid #61dafb;
-      border-radius: 5px;
-      color: #61dafb;
-      text-decoration: none;
-    }
-    a:hover {
-      background: #61dafb;
-      color: black;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Proyectos IoT</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>👋 Hola, soy Jhonatan Peña</h1>
-  <p>
-    Estudiante apasionado por la ingeniería, desarrollo de software y análisis técnico.<br>
-    Me gusta crear soluciones prácticas con tecnología.
-  </p>
-  <a href="https://github.com/jonapt" target="_blank">🔗 Ver mi GitHub</a>
+
+    <h1>Mis Proyectos IoT</h1>
+
+    <section class="contenedor-tarjetas">
+
+        <!-- Tarjeta #1 -->
+        <div class="tarjeta">
+            <span class="id">ID: 001</span>
+            <h2 class="titulo">
+                <a href="https://github.com/tuusuario/proyecto1" target="_blank">Sensor de Temperatura ESP32</a>
+            </h2>
+            <p class="descripcion">Medición en tiempo real vía MQTT.</p>
+            <span class="estado finalizado">Finalizado</span>
+        </div>
+
+        <!-- Tarjeta #2 -->
+        <div class="tarjeta">
+            <span class="id">ID: 002</span>
+            <h2 class="titulo">
+                <a href="https://github.com/tuusuario/proyecto2" target="_blank">Detector de Fugas de Gas</a>
+            </h2>
+            <p class="descripcion">Alertas por WhatsApp si se detecta gas.</p>
+            <span class="estado pendiente">En progreso</span>
+        </div>
+
+    </section>
+
 </body>
 </html>
 

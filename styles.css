@@ -1,0 +1,76 @@
+/* Estilo general */
+body {
+    font-family: Arial, sans-serif;
+    background: #f6f6f6;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Título principal */
+h1 {
+    text-align: center;
+    color: #222;
+    margin-bottom: 30px;
+}
+
+/* Contenedor de tarjetas */
+.contenedor-tarjetas {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Tarjeta base */
+.tarjeta {
+    background: white;
+    width: 280px;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+    border-left: 5px solid #3b82f6;
+}
+
+/* ID de tarjeta */
+.id {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Título y link */
+.titulo a {
+    text-decoration: none;
+    color: #1f2937;
+}
+
+.titulo a:hover {
+    text-decoration: underline;
+}
+
+/* Descripción */
+.descripcion {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+/* Estado */
+.estado {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Colores según estado */
+.finalizado {
+    background: #16a34a;
+    color: white;
+}
+
+.pendiente {
+    background: #eab308;
+    color: #111;
+}
+
