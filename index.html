@@ -14,7 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <!-- Pantalla de Login -->
+    <!-- ===== Pantalla de Login ===== -->
     <div id="loginScreen" class="login-screen">
         <div class="login-container">
             <div class="login-header">
@@ -26,7 +26,7 @@
                     </svg>
                 </div>
                 <h1>Setlify</h1>
-                <p>bendeciré tu nombre eternamente y para siempre.</p>
+                <p>Gestión profesional de set lists</p>
             </div>
 
             <form id="loginForm" class="auth-form">
@@ -85,7 +85,7 @@
         </div>
     </div>
 
-    <!-- App Content -->
+    <!-- ===== App Content ===== -->
     <div id="appContent" style="display:none;">
         <!-- App Bar -->
         <header class="app-bar">
@@ -151,7 +151,7 @@
         </nav>
 
         <main class="container">
-            <!-- Vista de SetLists -->
+            <!-- ===== VISTA DE SETLISTS ===== -->
             <section id="setlists-view" class="view">
                 <div class="view-header">
                     <h2>Mis Set Lists</h2>
@@ -166,7 +166,7 @@
                 <div id="setlists-list" class="cards-grid"></div>
             </section>
 
-            <!-- Vista de Canciones -->
+            <!-- ===== VISTA DE CANCIONES ===== -->
             <section id="songs-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToSetlists" class="back-btn">
@@ -213,7 +213,7 @@
                 <div id="songs-list" class="songs-list"></div>
             </section>
 
-            <!-- Vista de Letras -->
+            <!-- ===== VISTA DE LETRAS ===== -->
             <section id="lyrics-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToSongs" class="back-btn">
@@ -260,7 +260,7 @@
                 <div id="groups-list" class="groups-grid"></div>
             </section>
 
-            <!-- Vista de Detalle de Grupo -->
+            <!-- ===== VISTA DE DETALLE DE GRUPO ===== -->
             <section id="group-detail-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToGroups" class="back-btn">
@@ -368,7 +368,7 @@
                 </div>
             </section>
 
-            <!-- Vista de Canciones del Grupo -->
+            <!-- ===== VISTA DE CANCIONES DEL GRUPO ===== -->
             <section id="group-songs-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToGroupDetail" class="back-btn">
@@ -389,7 +389,7 @@
                 <div id="group-songs-list" class="songs-list"></div>
             </section>
 
-            <!-- Vista de Letras del Grupo -->
+            <!-- ===== VISTA DE LETRAS DEL GRUPO ===== -->
             <section id="group-lyrics-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToGroupSongs" class="back-btn">
@@ -426,7 +426,7 @@
                 <div id="community-list" class="community-grid"></div>
             </section>
 
-            <!-- Vista de Detalle de Set List Público -->
+            <!-- ===== VISTA DE DETALLE DE SET LIST PÚBLICO ===== -->
             <section id="public-songs-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToCommunity" class="back-btn">
@@ -448,7 +448,7 @@
                 <div id="public-songs-list" class="songs-list"></div>
             </section>
 
-            <!-- Vista de Letras Públicas -->
+            <!-- ===== VISTA DE LETRAS PÚBLICAS ===== -->
             <section id="public-lyrics-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToPublicSongs" class="back-btn">
@@ -463,7 +463,7 @@
             </section>
         </main>
 
-        <!-- Modal General -->
+        <!-- ===== MODAL ===== -->
         <div id="modal" class="modal">
             <div class="modal-content">
                 <div id="modal-body"></div>
@@ -747,14 +747,33 @@
             static async findGroupByInviteCode(inviteCode) {
                 try {
                     const code = inviteCode.toUpperCase().trim();
+                    console.log('🔍 Buscando código:', code);
+                    
                     const snapshot = await db.collection('groups')
                         .where('inviteCode', '==', code)
                         .get();
                     
+                    console.log('📊 Resultados encontrados:', snapshot.size);
+                    
                     if (!snapshot.empty) {
                         const doc = snapshot.docs[0];
-                        return Group.fromJSON(doc.data());
+                        const group = Group.fromJSON(doc.data());
+                        console.log('✅ Grupo encontrado:', group.name);
+                        return group;
                     }
+                    
+                    // Si no encuentra, buscar en todos los grupos (fallback)
+                    console.log('🔄 Buscando en todos los grupos...');
+                    const allGroups = await db.collection('groups').get();
+                    allGroups.forEach(doc => {
+                        const data = doc.data();
+                        if (data.inviteCode && data.inviteCode.toUpperCase() === code) {
+                            console.log('✅ Grupo encontrado en fallback:', data.name);
+                            return Group.fromJSON(data);
+                        }
+                    });
+                    
+                    console.log('❌ Código no encontrado');
                     return null;
                 } catch (error) {
                     console.error('Error buscando grupo por código:', error);
@@ -766,17 +785,13 @@
                 try {
                     const code = inviteCode.toUpperCase().trim();
                     
-                    const snapshot = await db.collection('groups')
-                        .where('inviteCode', '==', code)
-                        .get();
+                    // Primero buscar por código
+                    const group = await this.findGroupByInviteCode(code);
                     
-                    if (snapshot.empty) {
+                    if (!group) {
                         return { success: false, error: 'Código de invitación no válido' };
                     }
 
-                    const doc = snapshot.docs[0];
-                    const group = Group.fromJSON(doc.data());
-                    
                     if (group.members.includes(userEmail)) {
                         return { success: false, error: 'Ya eres miembro de este grupo' };
                     }
@@ -920,6 +935,44 @@
                 } catch (error) {
                     console.error('Error importando:', error);
                     return null;
+                }
+            }
+
+            // ===== FUNCIÓN DE MIGRACIÓN =====
+            static async migrateGroups() {
+                try {
+                    console.log('🔄 Iniciando migración de grupos...');
+                    const snapshot = await db.collection('groups').get();
+                    
+                    let count = 0;
+                    const batch = db.batch();
+                    
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        // Si no tiene inviteCode, agregarlo
+                        if (!data.inviteCode) {
+                            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                            let code = '';
+                            for (let i = 0; i < 8; i++) {
+                                code += chars.charAt(Math.floor(Math.random() * chars.length));
+                            }
+                            data.inviteCode = code;
+                            batch.update(doc.ref, { inviteCode: code });
+                            count++;
+                            console.log(`✅ Código generado para ${data.name}: ${code}`);
+                        }
+                    });
+                    
+                    if (count > 0) {
+                        await batch.commit();
+                        console.log(`✅ Migración completada: ${count} grupos actualizados`);
+                    } else {
+                        console.log('✅ Todos los grupos ya tienen código de invitación');
+                    }
+                    return { success: true, count: count };
+                } catch (error) {
+                    console.error('❌ Error en migración:', error);
+                    return { success: false, error: error.message };
                 }
             }
         }
@@ -1195,7 +1248,7 @@
                 // Código de invitación
                 const inviteCodeEl = document.getElementById('groupInviteCode');
                 if (inviteCodeEl) {
-                    inviteCodeEl.textContent = group.inviteCode || 'N/A';
+                    inviteCodeEl.textContent = group.inviteCode || 'SIN-CODIGO';
                 }
 
                 const descContainer = document.getElementById('groupDescription');
@@ -1203,7 +1256,6 @@
                     descContainer.textContent = group.description || 'Sin descripción';
                 }
 
-                // Solicitudes pendientes (solo para el creador)
                 const currentUserEmail = window.app?.auth?.getUser()?.email;
                 const isCreator = currentUserEmail === group.members[0];
                 const pendingSection = document.getElementById('pendingRequestsSection');
@@ -1223,7 +1275,6 @@
                     pendingSection.style.display = 'none';
                 }
 
-                // Miembros
                 const membersContainer = document.getElementById('group-members');
                 if (membersContainer) {
                     if (group.members.length === 0) {
@@ -1532,6 +1583,12 @@
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }, 2000);
                 }
+                
+                // Ejecutar migración de grupos al cargar
+                setTimeout(async () => {
+                    await StorageManager.migrateGroups();
+                    await this.loadGroups();
+                }, 3000);
             }
 
             setupEventListeners() {
@@ -2079,7 +2136,7 @@
                 }
 
                 const code = inviteCode.toUpperCase().trim();
-                UI.showToast('🔍 Buscando grupo...');
+                UI.showToast('🔍 Buscando grupo con código: ' + code);
                 
                 const result = await StorageManager.joinGroupByInviteCode(code, user.email);
                 
@@ -2105,7 +2162,7 @@
                     return;
                 }
 
-                const inviteCode = group.inviteCode || 'N/A';
+                const inviteCode = group.inviteCode || 'SIN-CODIGO';
                 const inviteLink = `${window.location.origin}${window.location.pathname}?invite=${inviteCode}`;
                 const inviteText = `🎵 ¡Únete a "${group.name}" en Setlify!\n\n` +
                                    `Código: ${inviteCode}\n` +
@@ -2151,7 +2208,7 @@
                     return;
                 }
 
-                const inviteCode = group.inviteCode || 'N/A';
+                const inviteCode = group.inviteCode || 'SIN-CODIGO';
                 navigator.clipboard.writeText(inviteCode).then(() => {
                     UI.showToast('📋 Código copiado: ' + inviteCode);
                 }).catch(() => {
@@ -2229,7 +2286,7 @@
                             return;
                         }
                         
-                        const inviteCode = group.inviteCode || 'N/A';
+                        const inviteCode = group.inviteCode || 'SIN-CODIGO';
                         const message = `Has sido invitado a "${group.name}" en Setlify.\nCódigo: ${inviteCode}`;
                         
                         UI.showToast(`📧 Invitación enviada a ${email}`);
