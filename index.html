@@ -30,7 +30,6 @@
                 <p>Gestión profesional de set lists</p>
             </div>
 
-            <!-- Login Form -->
             <form id="loginForm" class="auth-form">
                 <div class="form-group">
                     <label>Correo electrónico</label>
@@ -50,7 +49,6 @@
                 </p>
             </form>
 
-            <!-- Register Form -->
             <form id="registerForm" class="auth-form" style="display:none;">
                 <div class="form-group">
                     <label>Nombre completo</label>
@@ -75,7 +73,6 @@
                 </p>
             </form>
 
-            <!-- Reset Password Form -->
             <form id="resetPasswordForm" class="auth-form" style="display:none;">
                 <div class="form-group">
                     <label>Correo electrónico</label>
@@ -103,6 +100,13 @@
                     <span class="brand-text">Setlify</span>
                 </div>
                 <div class="app-bar-actions">
+                    <button id="btnNotifications" class="icon-btn notification-btn" title="Notificaciones">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span id="notificationBadge" class="notification-badge" style="display:none;">0</span>
+                    </button>
                     <div id="userProfile" class="user-profile">
                         <div id="userAvatar" class="user-avatar">J</div>
                         <span id="userDisplayName" class="user-name"></span>
@@ -159,20 +163,18 @@
             <section id="setlists-view" class="view">
                 <div class="view-header">
                     <h2>Mis Set Lists</h2>
-                    <div style="display: flex; gap: 8px;">
-                        <button id="btnAddSetlist" class="primary-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Nuevo
-                        </button>
-                    </div>
+                    <button id="btnAddSetlist" class="primary-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Nuevo
+                    </button>
                 </div>
                 <div id="setlists-list" class="cards-grid"></div>
             </section>
 
-            <!-- Vista de Canciones (Mis Set Lists) -->
+            <!-- Vista de Canciones -->
             <section id="songs-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToSetlists" class="back-btn">
@@ -240,7 +242,7 @@
                 <div id="lyrics-content" class="lyrics-content"></div>
             </section>
 
-            <!-- ===== VISTA DE GRUPOS ===== -->
+            <!-- ===== VISTA DE GRUPOS MEJORADA ===== -->
             <section id="groups-view" class="view active">
                 <div class="view-header">
                     <h2>Grupos de Alabanza</h2>
@@ -252,7 +254,7 @@
                         Nuevo Grupo
                     </button>
                 </div>
-                <div id="groups-list" class="cards-grid"></div>
+                <div id="groups-list" class="groups-grid"></div>
             </section>
 
             <!-- Vista de Detalle de Grupo -->
@@ -265,7 +267,7 @@
                         Volver
                     </button>
                     <h2 id="group-title">Grupo</h2>
-                    <div style="display: flex; gap: 8px;">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button id="btnInviteMember" class="primary-btn small" style="background: #F57C00;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -292,8 +294,52 @@
                         </button>
                     </div>
                 </div>
-                <div id="group-members" style="margin-bottom: 16px;"></div>
-                <div id="group-setlists" class="cards-grid"></div>
+
+                <!-- Info del Grupo -->
+                <div class="group-detail-card">
+                    <div class="group-info-row">
+                        <div class="group-stats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="groupMemberCount">0</span>
+                                <span class="stat-label">Miembros</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="groupSetlistCount">0</span>
+                                <span class="stat-label">Set Lists</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="groupSongCount">0</span>
+                                <span class="stat-label">Canciones</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="groupDescription" class="group-description-text"></div>
+                </div>
+
+                <!-- Miembros -->
+                <div class="group-section">
+                    <div class="section-header">
+                        <h3>Miembros</h3>
+                        <button id="btnInviteMemberInline" class="primary-btn small" style="background: #F57C00;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="8.5" cy="7" r="4"/>
+                                <line x1="20" y1="8" x2="20" y2="14"/>
+                                <line x1="23" y1="11" x2="17" y2="11"/>
+                            </svg>
+                            Invitar
+                        </button>
+                    </div>
+                    <div id="group-members" class="members-container"></div>
+                </div>
+
+                <!-- Set Lists del Grupo -->
+                <div class="group-section">
+                    <div class="section-header">
+                        <h3>Set Lists del Grupo</h3>
+                    </div>
+                    <div id="group-setlists" class="cards-grid"></div>
+                </div>
             </section>
 
             <!-- Vista de Canciones del Grupo -->
@@ -306,15 +352,13 @@
                         Volver
                     </button>
                     <h2 id="group-setlist-title">Set List del Grupo</h2>
-                    <div style="display: flex; gap: 8px;">
-                        <button id="btnAddGroupSong" class="primary-btn small">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Canción
-                        </button>
-                    </div>
+                    <button id="btnAddGroupSong" class="primary-btn small">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Canción
+                    </button>
                 </div>
                 <div id="group-songs-list" class="songs-list"></div>
             </section>
@@ -343,7 +387,7 @@
                                 <circle cx="11" cy="11" r="8"/>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                             </svg>
-                            <input type="text" id="searchCommunity" placeholder="Buscar set lists..." />
+                            <input type="text" id="searchCommunity" placeholder="Buscar..." />
                         </div>
                         <button id="btnRefreshCommunity" class="search-btn" title="Actualizar">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -393,7 +437,18 @@
             </section>
         </main>
 
-        <!-- Modal -->
+        <!-- Modal de Notificaciones -->
+        <div id="notificationModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Notificaciones</h3>
+                    <button class="modal-close-btn" onclick="UI.closeModal()">✕</button>
+                </div>
+                <div id="notifications-list" class="notifications-list"></div>
+            </div>
+        </div>
+
+        <!-- Modal General -->
         <div id="modal" class="modal">
             <div class="modal-content">
                 <div id="modal-body"></div>
@@ -498,9 +553,6 @@
             }
         }
 
-        // ============================================
-        // MODELO DE GRUPO
-        // ============================================
         class Group {
             constructor(id, name, description) {
                 this.id = id || crypto.randomUUID();
@@ -525,7 +577,6 @@
             }
 
             addSetlist(setlist) {
-                // Asegurar que el setlist tenga un ID único
                 const newSetlist = SetList.fromJSON(setlist.toJSON());
                 newSetlist.id = crypto.randomUUID();
                 this.setlists.push(newSetlist);
@@ -539,6 +590,10 @@
 
             getSetlist(id) {
                 return this.setlists.find(s => s.id === id);
+            }
+
+            getTotalSongs() {
+                return this.setlists.reduce((total, s) => total + s.getSongCount(), 0);
             }
 
             toJSON() {
@@ -560,6 +615,64 @@
                 group.createdBy = data.createdBy || null;
                 group.createdAt = data.createdAt || new Date().toISOString();
                 return group;
+            }
+        }
+
+        // ============================================
+        // NOTIFICATIONS SYSTEM
+        // ============================================
+        class NotificationManager {
+            constructor() {
+                this.notifications = [];
+                this.listeners = [];
+            }
+
+            addNotification(message, type = 'info', data = null) {
+                const notification = {
+                    id: crypto.randomUUID(),
+                    message: message,
+                    type: type,
+                    data: data,
+                    read: false,
+                    createdAt: new Date().toISOString()
+                };
+                this.notifications.unshift(notification);
+                this.notifyListeners();
+                return notification;
+            }
+
+            markAsRead(id) {
+                const notif = this.notifications.find(n => n.id === id);
+                if (notif) {
+                    notif.read = true;
+                    this.notifyListeners();
+                }
+            }
+
+            markAllAsRead() {
+                this.notifications.forEach(n => n.read = true);
+                this.notifyListeners();
+            }
+
+            getUnreadCount() {
+                return this.notifications.filter(n => !n.read).length;
+            }
+
+            getAll() {
+                return this.notifications;
+            }
+
+            addListener(callback) {
+                this.listeners.push(callback);
+            }
+
+            notifyListeners() {
+                this.listeners.forEach(cb => cb(this.notifications));
+            }
+
+            clear() {
+                this.notifications = [];
+                this.notifyListeners();
             }
         }
 
@@ -596,8 +709,6 @@
                 }
             }
 
-            // ===== MÉTODOS PARA GRUPOS =====
-
             static async saveGroups(userId, groups) {
                 try {
                     await db.collection('groups').doc(userId).set({
@@ -626,8 +737,6 @@
                     return [];
                 }
             }
-
-            // ===== MÉTODOS PARA COMUNIDAD =====
 
             static async publishSetlist(userId, setlist, userName) {
                 try {
@@ -739,6 +848,103 @@
                 });
             }
 
+            static showModal(title, fields, onSubmit, submitLabel = 'Guardar') {
+                const modal = document.getElementById('modal');
+                const body = document.getElementById('modal-body');
+                if (!modal || !body) return;
+
+                let html = `<h3>${title}</h3>`;
+                fields.forEach(field => {
+                    html += `
+                        <div class="form-group">
+                            <label>${field.label}</label>
+                            ${field.type === 'textarea' 
+                                ? `<textarea id="${field.id}" ${field.required ? 'required' : ''} ${field.rows ? `rows="${field.rows}"` : ''}>${field.value || ''}</textarea>`
+                                : field.type === 'select'
+                                ? `<select id="${field.id}" ${field.required ? 'required' : ''}>
+                                    ${field.options.map(opt => 
+                                        `<option value="${opt}" ${opt === field.value ? 'selected' : ''}>${opt}</option>`
+                                    ).join('')}
+                                </select>`
+                                : `<input type="${field.type || 'text'}" id="${field.id}" value="${field.value || ''}" ${field.required ? 'required' : ''} ${field.placeholder ? `placeholder="${field.placeholder}"` : ''}>`
+                            }
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="UI.closeModal()">Cancelar</button>
+                        <button class="btn-primary" id="modalSubmit">${submitLabel}</button>
+                    </div>
+                `;
+
+                body.innerHTML = html;
+                modal.classList.add('active');
+
+                document.getElementById('modalSubmit').addEventListener('click', () => {
+                    const formData = {};
+                    fields.forEach(field => {
+                        const element = document.getElementById(field.id);
+                        if (element) {
+                            formData[field.id] = element.value;
+                        }
+                    });
+                    onSubmit(formData);
+                });
+            }
+
+            static showConfirm(message, onConfirm, onCancel) {
+                const modal = document.getElementById('modal');
+                const body = document.getElementById('modal-body');
+                if (!modal || !body) return;
+
+                body.innerHTML = `
+                    <h3>Confirmar</h3>
+                    <p style="margin: 16px 0; color: var(--text-secondary);">${message}</p>
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="UI.closeModal(); if (typeof onCancel === 'function') onCancel();">Cancelar</button>
+                        <button class="btn-primary" id="confirmBtn">Confirmar</button>
+                    </div>
+                `;
+
+                modal.classList.add('active');
+                document.getElementById('confirmBtn').addEventListener('click', () => {
+                    UI.closeModal();
+                    if (typeof onConfirm === 'function') onConfirm();
+                });
+            }
+
+            static closeModal() {
+                document.getElementById('modal').classList.remove('active');
+                document.getElementById('notificationModal')?.classList.remove('active');
+            }
+
+            static escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            static showToast(message, duration = 3000) {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.3s';
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
+
+            // ===== RENDER METHODS =====
+
             static renderSetlists(setlists) {
                 const container = document.getElementById('setlists-list');
                 if (!container) return;
@@ -746,10 +952,7 @@
                 if (setlists.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p class="empty-message">
-                                No hay set lists creados.<br>
-                                Crea tu primer set list
-                            </p>
+                            <p class="empty-message">No hay set lists creados.<br>Crea tu primer set list</p>
                         </div>
                     `;
                     return;
@@ -809,10 +1012,7 @@
                 if (setlist.songs.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p class="empty-message">
-                                No hay canciones en este set list.<br>
-                                Agrega tu primera canción
-                            </p>
+                            <p class="empty-message">No hay canciones en este set list.<br>Agrega tu primera canción</p>
                         </div>
                     `;
                     return;
@@ -850,7 +1050,7 @@
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
 
-            // ===== MÉTODOS PARA GRUPOS =====
+            // ===== RENDER GRUPOS MEJORADO =====
 
             static renderGroups(groups) {
                 const container = document.getElementById('groups-list');
@@ -859,33 +1059,40 @@
                 if (groups.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p class="empty-message">
-                                No hay grupos de alabanza.<br>
-                                Crea tu primer grupo
-                            </p>
+                            <p class="empty-message">No hay grupos de alabanza.<br>Crea tu primer grupo</p>
                         </div>
                     `;
                     return;
                 }
 
                 container.innerHTML = groups.map(group => `
-                    <div class="card" data-id="${group.id}">
-                        <div class="card-header">
-                            <h3>${UI.escapeHtml(group.name)}</h3>
-                            <div class="card-actions">
-                                <button class="btn-delete-group" data-id="${group.id}" title="Eliminar grupo">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="3 6 5 6 21 6"/>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                    </svg>
-                                </button>
+                    <div class="group-card" data-id="${group.id}">
+                        <div class="group-card-header">
+                            <div class="group-card-info">
+                                <h3>${UI.escapeHtml(group.name)}</h3>
+                                ${group.description ? `<p class="group-card-description">${UI.escapeHtml(group.description)}</p>` : ''}
+                            </div>
+                            <button class="btn-delete-group" data-id="${group.id}" title="Eliminar grupo">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="group-card-stats">
+                            <div class="group-stat">
+                                <span class="group-stat-number">${group.members.length}</span>
+                                <span class="group-stat-label">Miembros</span>
+                            </div>
+                            <div class="group-stat">
+                                <span class="group-stat-number">${group.setlists.length}</span>
+                                <span class="group-stat-label">Set Lists</span>
+                            </div>
+                            <div class="group-stat">
+                                <span class="group-stat-number">${group.getTotalSongs()}</span>
+                                <span class="group-stat-label">Canciones</span>
                             </div>
                         </div>
-                        <div class="group-info">
-                            <span class="key-badge">${group.members.length} miembros</span>
-                            <span class="key-badge" style="background: #E3F2FD; color: #0D47A1;">${group.setlists.length} set lists</span>
-                        </div>
-                        ${group.description ? `<p class="group-description">${UI.escapeHtml(group.description)}</p>` : ''}
                     </div>
                 `).join('');
             }
@@ -893,48 +1100,45 @@
             static renderGroupDetail(group) {
                 document.getElementById('group-title').textContent = group.name;
 
-                // Renderizar miembros
-                const membersContainer = document.getElementById('group-members');
-                if (membersContainer) {
-                    const memberCount = group.members.length;
-                    membersContainer.innerHTML = `
-                        <div class="group-members-header">
-                            <span class="members-label">👥 ${memberCount} miembro${memberCount !== 1 ? 's' : ''}</span>
-                            <button id="btnInviteMemberInline" class="primary-btn small" style="background: #F57C00;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="8.5" cy="7" r="4"/>
-                                    <line x1="20" y1="8" x2="20" y2="14"/>
-                                    <line x1="23" y1="11" x2="17" y2="11"/>
-                                </svg>
-                                Invitar
-                            </button>
-                        </div>
-                        <div class="members-list">
-                            ${group.members.length === 0 ? 
-                                '<p class="empty-message" style="padding: 8px 0;">No hay miembros aún</p>' :
-                                group.members.map(email => `
-                                    <div class="member-item">
-                                        <span>${UI.escapeHtml(email)}</span>
-                                        ${group.members.length > 1 ? `<button class="btn-remove-member" data-email="${email}" title="Eliminar miembro">✕</button>` : ''}
-                                    </div>
-                                `).join('')
-                            }
-                        </div>
-                    `;
+                // Stats
+                document.getElementById('groupMemberCount').textContent = group.members.length;
+                document.getElementById('groupSetlistCount').textContent = group.setlists.length;
+                document.getElementById('groupSongCount').textContent = group.getTotalSongs();
+
+                // Descripción
+                const descContainer = document.getElementById('groupDescription');
+                if (descContainer) {
+                    descContainer.textContent = group.description || 'Sin descripción';
                 }
 
-                // Renderizar setlists del grupo
+                // Miembros
+                const membersContainer = document.getElementById('group-members');
+                if (membersContainer) {
+                    if (group.members.length === 0) {
+                        membersContainer.innerHTML = `
+                            <div class="empty-state small">
+                                <p class="empty-message">No hay miembros en este grupo</p>
+                            </div>
+                        `;
+                    } else {
+                        membersContainer.innerHTML = group.members.map(email => `
+                            <div class="member-chip">
+                                <span class="member-avatar">${email.charAt(0).toUpperCase()}</span>
+                                <span class="member-email">${UI.escapeHtml(email)}</span>
+                                ${group.members.length > 1 ? `<button class="btn-remove-member" data-email="${email}" title="Eliminar miembro">✕</button>` : ''}
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                // Set Lists
                 const container = document.getElementById('group-setlists');
                 if (!container) return;
 
                 if (group.setlists.length === 0) {
                     container.innerHTML = `
-                        <div class="empty-state">
-                            <p class="empty-message">
-                                No hay set lists en este grupo.<br>
-                                Crea uno nuevo o importa uno existente
-                            </p>
+                        <div class="empty-state small">
+                            <p class="empty-message">No hay set lists en este grupo</p>
                         </div>
                     `;
                     return;
@@ -968,10 +1172,7 @@
                 if (setlist.songs.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p class="empty-message">
-                                No hay canciones en este set list.<br>
-                                Agrega tu primera canción
-                            </p>
+                            <p class="empty-message">No hay canciones en este set list.<br>Agrega tu primera canción</p>
                         </div>
                     `;
                     return;
@@ -995,7 +1196,7 @@
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
 
-            // ===== MÉTODOS PARA COMUNIDAD =====
+            // ===== COMUNIDAD =====
 
             static renderCommunity(setlists) {
                 const container = document.getElementById('community-list');
@@ -1004,10 +1205,7 @@
                 if (setlists.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p class="empty-message">
-                                No hay set lists públicos disponibles.<br>
-                                ¡Sé el primero en compartir!
-                            </p>
+                            <p class="empty-message">No hay set lists públicos disponibles.<br>¡Sé el primero en compartir!</p>
                         </div>
                     `;
                     return;
@@ -1091,98 +1289,42 @@
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
 
-            static showModal(title, fields, onSubmit, submitLabel = 'Guardar') {
-                const modal = document.getElementById('modal');
-                const body = document.getElementById('modal-body');
-                if (!modal || !body) return;
+            // ===== NOTIFICACIONES =====
 
-                let html = `<h3>${title}</h3>`;
-                fields.forEach(field => {
-                    html += `
-                        <div class="form-group">
-                            <label>${field.label}</label>
-                            ${field.type === 'textarea' 
-                                ? `<textarea id="${field.id}" ${field.required ? 'required' : ''} ${field.rows ? `rows="${field.rows}"` : ''}>${field.value || ''}</textarea>`
-                                : field.type === 'select'
-                                ? `<select id="${field.id}" ${field.required ? 'required' : ''}>
-                                    ${field.options.map(opt => 
-                                        `<option value="${opt}" ${opt === field.value ? 'selected' : ''}>${opt}</option>`
-                                    ).join('')}
-                                </select>`
-                                : `<input type="${field.type || 'text'}" id="${field.id}" value="${field.value || ''}" ${field.required ? 'required' : ''} ${field.placeholder ? `placeholder="${field.placeholder}"` : ''}>`
-                            }
+            static renderNotifications(notifications) {
+                const container = document.getElementById('notifications-list');
+                if (!container) return;
+
+                if (notifications.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state small">
+                            <p class="empty-message">No hay notificaciones</p>
                         </div>
                     `;
-                });
+                    return;
+                }
 
-                html += `
-                    <div class="modal-actions">
-                        <button class="btn-secondary" onclick="UI.closeModal()">Cancelar</button>
-                        <button class="btn-primary" id="modalSubmit">${submitLabel}</button>
+                container.innerHTML = notifications.map(notif => `
+                    <div class="notification-item ${notif.read ? 'read' : 'unread'}">
+                        <div class="notification-content">
+                            <p>${UI.escapeHtml(notif.message)}</p>
+                            <span class="notification-time">${new Date(notif.createdAt).toLocaleString()}</span>
+                        </div>
+                        ${!notif.read ? `<button class="btn-mark-read" data-id="${notif.id}">✓</button>` : ''}
                     </div>
-                `;
-
-                body.innerHTML = html;
-                modal.classList.add('active');
-
-                document.getElementById('modalSubmit').addEventListener('click', () => {
-                    const formData = {};
-                    fields.forEach(field => {
-                        const element = document.getElementById(field.id);
-                        if (element) {
-                            formData[field.id] = element.value;
-                        }
-                    });
-                    onSubmit(formData);
-                });
+                `).join('');
             }
 
-            static closeModal() {
-                document.getElementById('modal').classList.remove('active');
-            }
+            static updateNotificationBadge(count) {
+                const badge = document.getElementById('notificationBadge');
+                if (!badge) return;
 
-            static showConfirm(message, onConfirm, onCancel) {
-                const modal = document.getElementById('modal');
-                const body = document.getElementById('modal-body');
-                if (!modal || !body) return;
-
-                body.innerHTML = `
-                    <h3>Confirmar</h3>
-                    <p style="margin: 16px 0; color: var(--text-secondary);">${message}</p>
-                    <div class="modal-actions">
-                        <button class="btn-secondary" onclick="UI.closeModal(); if (typeof onCancel === 'function') onCancel();">Cancelar</button>
-                        <button class="btn-primary" id="confirmBtn">Confirmar</button>
-                    </div>
-                `;
-
-                modal.classList.add('active');
-                document.getElementById('confirmBtn').addEventListener('click', () => {
-                    UI.closeModal();
-                    if (typeof onConfirm === 'function') onConfirm();
-                });
-            }
-
-            static escapeHtml(text) {
-                if (!text) return '';
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
-
-            static showToast(message, duration = 3000) {
-                const existing = document.querySelector('.toast');
-                if (existing) existing.remove();
-
-                const toast = document.createElement('div');
-                toast.className = 'toast';
-                toast.textContent = message;
-                document.body.appendChild(toast);
-
-                setTimeout(() => {
-                    toast.style.opacity = '0';
-                    toast.style.transition = 'opacity 0.3s';
-                    setTimeout(() => toast.remove(), 300);
-                }, duration);
+                if (count > 0) {
+                    badge.style.display = 'flex';
+                    badge.textContent = count > 99 ? '99+' : count;
+                } else {
+                    badge.style.display = 'none';
+                }
             }
         }
 
@@ -1279,6 +1421,7 @@
         class SetlifyApp {
             constructor() {
                 this.auth = new AuthManager();
+                this.notificationManager = new NotificationManager();
                 this.setlists = [];
                 this.groups = [];
                 this.currentSetlistId = null;
@@ -1289,6 +1432,12 @@
                 this.publicSetlists = [];
                 this.currentPublicSetlist = null;
                 this.currentPublicSongIndex = null;
+                
+                // Configurar notificaciones
+                this.notificationManager.addListener((notifications) => {
+                    UI.renderNotifications(notifications);
+                    UI.updateNotificationBadge(this.notificationManager.getUnreadCount());
+                });
                 
                 this.auth.onAuthStateChanged((user) => {
                     if (user) {
@@ -1360,6 +1509,23 @@
                             this.loadCommunitySetlists();
                         }
                     });
+                });
+
+                // Notificaciones
+                document.getElementById('btnNotifications')?.addEventListener('click', () => {
+                    const modal = document.getElementById('notificationModal');
+                    if (modal) {
+                        modal.classList.add('active');
+                        // Marcar como leídas al abrir
+                        this.notificationManager.markAllAsRead();
+                    }
+                });
+
+                document.getElementById('notifications-list')?.addEventListener('click', (e) => {
+                    const markBtn = e.target.closest('.btn-mark-read');
+                    if (markBtn) {
+                        this.notificationManager.markAsRead(markBtn.dataset.id);
+                    }
                 });
 
                 // ===== SET LISTS =====
@@ -1479,6 +1645,12 @@
                     }
                 });
 
+                document.getElementById('notificationModal')?.addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) {
+                        UI.closeModal();
+                    }
+                });
+
                 // Búsqueda en comunidad
                 document.getElementById('searchCommunity')?.addEventListener('input', (e) => {
                     this.filterCommunity(e.target.value);
@@ -1534,7 +1706,7 @@
                         return;
                     }
 
-                    const card = e.target.closest('.card');
+                    const card = e.target.closest('.group-card');
                     if (card) {
                         this.openGroup(card.dataset.id);
                     }
@@ -1572,7 +1744,6 @@
 
                 // Canciones del grupo
                 document.getElementById('group-songs-list')?.addEventListener('click', (e) => {
-                    // Solo abrir canción si no es un botón
                     const songItem = e.target.closest('.song-item');
                     if (songItem && !e.target.closest('button')) {
                         const index = Array.from(songItem.parentElement.children).indexOf(songItem);
@@ -1696,6 +1867,9 @@
                     this.groups = await StorageManager.loadGroups(user.uid);
                     this.renderSetlists();
                     this.renderGroups();
+                    
+                    // Verificar notificaciones de grupos
+                    this.checkGroupNotifications();
                 } catch (error) {
                     console.error('Error cargando datos:', error);
                     UI.showToast('Error cargando datos');
@@ -1715,36 +1889,44 @@
                 }
             }
 
-            // ===== SET LISTS (igual que antes) =====
+            // ===== NOTIFICACIONES =====
 
-            renderSetlists() {
-                UI.renderSetlists(this.setlists);
+            checkGroupNotifications() {
+                // Notificar sobre setlists nuevos en grupos donde es miembro
+                this.groups.forEach(group => {
+                    const userEmail = this.auth.getUser()?.email;
+                    if (userEmail && group.members.includes(userEmail)) {
+                        group.setlists.forEach(setlist => {
+                            // Verificar si ya fue notificado (usando localStorage como ejemplo)
+                            const notifKey = `notif_${group.id}_${setlist.id}`;
+                            if (!localStorage.getItem(notifKey)) {
+                                this.notificationManager.addNotification(
+                                    `📋 Nuevo set list "${setlist.name}" en el grupo "${group.name}"`,
+                                    'info',
+                                    { groupId: group.id, setlistId: setlist.id }
+                                );
+                                localStorage.setItem(notifKey, 'true');
+                            }
+                        });
+                    }
+                });
             }
 
-            renderSongs() {
-                const setlist = this.getCurrentSetlist();
-                if (setlist) {
-                    UI.renderSongs(setlist);
-                }
-            }
-
-            getCurrentSetlist() {
-                return this.setlists.find(s => s.id === this.currentSetlistId);
-            }
-
-            openSetlist(id) {
-                this.currentSetlistId = id;
-                this.currentSongIndex = null;
-                UI.showView('songs-view');
-                this.renderSongs();
-            }
-
-            openSong(index) {
-                const setlist = this.getCurrentSetlist();
-                if (!setlist || !setlist.songs[index]) return;
-                this.currentSongIndex = index;
-                UI.renderLyrics(setlist.songs[index]);
-                UI.showView('lyrics-view');
+            sendGroupNotification(group, setlist) {
+                // Notificar a todos los miembros del grupo
+                group.members.forEach(memberEmail => {
+                    // Solo enviar si no es el creador
+                    const user = this.auth.getUser();
+                    if (memberEmail !== user?.email) {
+                        // Aquí se enviaría la notificación real
+                        // Por ahora solo guardamos en el sistema de notificaciones
+                        this.notificationManager.addNotification(
+                            `📋 Nuevo set list "${setlist.name}" en el grupo "${group.name}"`,
+                            'info',
+                            { groupId: group.id, setlistId: setlist.id }
+                        );
+                    }
+                });
             }
 
             // ===== GRUPOS =====
@@ -1899,6 +2081,10 @@
                         group.addSetlist(setlist);
                         await this.saveAllData();
                         this.renderCurrentGroupDetail();
+                        
+                        // Enviar notificación a los miembros
+                        this.sendGroupNotification(group, setlist);
+                        
                         UI.closeModal();
                         UI.showToast(`Set List "${setlist.name}" agregado al grupo`);
                     },
@@ -1946,10 +2132,7 @@
                     return;
                 }
 
-                // Crear lista de setlists disponibles para importar
                 const availableSetlists = [...this.setlists];
-                
-                // También incluir setlists públicos de la comunidad
                 const communitySetlists = this.publicSetlists || [];
 
                 const options = [
@@ -1983,13 +2166,10 @@
 
                         let setlistToImport = null;
 
-                        // Buscar en mis setlists
                         if (selected.value.startsWith('my_')) {
                             const id = selected.value.replace('my_', '');
                             setlistToImport = this.setlists.find(s => s.id === id);
-                        } 
-                        // Buscar en la comunidad
-                        else if (selected.value.startsWith('pub_')) {
+                        } else if (selected.value.startsWith('pub_')) {
                             const publicId = selected.value.replace('pub_', '');
                             const publicSetlist = this.publicSetlists.find(s => s.publicId === publicId);
                             if (publicSetlist) {
@@ -2002,7 +2182,6 @@
                             return;
                         }
 
-                        // Verificar si ya existe en el grupo
                         const exists = group.setlists.some(s => s.name === setlistToImport.name && s.key === setlistToImport.key);
                         if (exists) {
                             UI.showToast('Este set list ya está en el grupo');
@@ -2052,77 +2231,36 @@
                 );
             }
 
-            // ===== COMUNIDAD (igual que antes) =====
+            // ===== SET LISTS =====
 
-            async loadCommunitySetlists() {
-                UI.showToast('Cargando comunidad...');
-                try {
-                    this.publicSetlists = await StorageManager.getPublicSetlists();
-                    UI.renderCommunity(this.publicSetlists);
-                    UI.showToast(`${this.publicSetlists.length} set lists disponibles`);
-                } catch (error) {
-                    console.error('Error cargando comunidad:', error);
-                    UI.showToast('Error cargando comunidad');
+            renderSetlists() {
+                UI.renderSetlists(this.setlists);
+            }
+
+            renderSongs() {
+                const setlist = this.getCurrentSetlist();
+                if (setlist) {
+                    UI.renderSongs(setlist);
                 }
             }
 
-            filterCommunity(query) {
-                const filtered = this.publicSetlists.filter(s => 
-                    s.name.toLowerCase().includes(query.toLowerCase()) ||
-                    s.key.toLowerCase().includes(query.toLowerCase()) ||
-                    (s.publisherName && s.publisherName.toLowerCase().includes(query.toLowerCase()))
-                );
-                UI.renderCommunity(filtered);
+            getCurrentSetlist() {
+                return this.setlists.find(s => s.id === this.currentSetlistId);
             }
 
-            async viewPublicSetlist(publicId) {
-                const setlist = this.publicSetlists.find(s => s.publicId === publicId);
-                if (!setlist) {
-                    UI.showToast('Set list no encontrado');
-                    return;
-                }
-
-                this.currentPublicSetlist = setlist;
-                this.currentPublicSongIndex = null;
-                UI.showView('public-songs-view');
-                UI.renderPublicSongs(setlist);
+            openSetlist(id) {
+                this.currentSetlistId = id;
+                this.currentSongIndex = null;
+                UI.showView('songs-view');
+                this.renderSongs();
             }
 
-            openPublicSong(index) {
-                const setlist = this.currentPublicSetlist;
+            openSong(index) {
+                const setlist = this.getCurrentSetlist();
                 if (!setlist || !setlist.songs[index]) return;
-                this.currentPublicSongIndex = index;
-                UI.renderPublicLyrics(setlist.songs[index]);
-                UI.showView('public-lyrics-view');
-            }
-
-            async importPublicSetlist(publicId) {
-                const user = this.auth.getUser();
-                if (!user) {
-                    UI.showToast('Debes iniciar sesión para importar');
-                    return;
-                }
-
-                const existing = this.setlists.find(s => s.publicId === publicId);
-                if (existing) {
-                    UI.showToast('Ya tienes este set list en tu biblioteca');
-                    return;
-                }
-
-                UI.showConfirm(
-                    '¿Importar este set list a tu biblioteca?',
-                    async () => {
-                        const setlist = await StorageManager.importPublicSetlist(publicId, user.uid);
-                        if (setlist) {
-                            this.setlists.push(setlist);
-                            await this.saveAllData();
-                            this.renderSetlists();
-                            UI.showToast(`"${setlist.name}" importado a tu biblioteca`);
-                        } else {
-                            UI.showToast('Error al importar');
-                        }
-                    }
-                );
+                this.currentSongIndex = index;
+                UI.renderLyrics(setlist.songs[index]);
+                UI.showView('lyrics-view');
             }
 
             // ===== TOGGLE PUBLICACIÓN =====
@@ -2135,7 +2273,7 @@
                 }
 
                 if (setlist.songs.length === 0) {
-                    UI.showToast('El set list está vacío. Agrega canciones primero.');
+                    UI.showToast('El set list está vacío');
                     this.updateToggleState(false);
                     return;
                 }
@@ -2207,7 +2345,7 @@
                 container.classList.toggle('public', isPublic);
             }
 
-            // ===== EDITAR SET LIST =====
+            // ===== EDITAR =====
 
             showEditSetlistModal() {
                 const setlist = this.getCurrentSetlist();
@@ -2221,7 +2359,7 @@
                 UI.showModal(
                     'Editar Set List',
                     [
-                        { id: 'editName', label: 'Nombre del Set List', type: 'text', value: setlist.name, required: true },
+                        { id: 'editName', label: 'Nombre', type: 'text', value: setlist.name, required: true },
                         { id: 'editKey', label: 'Tonalidad', type: 'select', options: keys, value: setlist.key, required: true }
                     ],
                     async (data) => {
@@ -2251,8 +2389,6 @@
                     'Guardar cambios'
                 );
             }
-
-            // ===== EDITAR CANCIÓN =====
 
             showEditSongModal(index) {
                 const setlist = this.getCurrentSetlist();
@@ -2306,7 +2442,7 @@
                 );
             }
 
-            // ===== ELIMINAR SET LIST =====
+            // ===== ELIMINAR =====
 
             async deleteSetlist(id) {
                 const setlist = this.setlists.find(s => s.id === id);
@@ -2325,8 +2461,6 @@
                     }
                 );
             }
-
-            // ===== ELIMINAR CANCIÓN =====
 
             async deleteSong(index) {
                 const setlist = this.getCurrentSetlist();
@@ -2352,7 +2486,7 @@
                 );
             }
 
-            // ===== EXPORTAR SET LIST INDIVIDUAL =====
+            // ===== EXPORTAR =====
 
             exportSingleSetlist(id) {
                 const setlist = this.setlists.find(s => s.id === id);
@@ -2372,6 +2506,63 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 UI.showToast(`"${setlist.name}" exportado`);
+            }
+
+            exportAllData() {
+                const data = {
+                    setlists: this.setlists.map(s => s.toJSON()),
+                    groups: this.groups.map(g => g.toJSON())
+                };
+
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `setlify-all-${new Date().toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                UI.showToast('Todos los datos exportados');
+            }
+
+            importData(file) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        if (Array.isArray(data)) {
+                            const imported = data.map(item => SetList.fromJSON(item));
+                            this.setlists = [...this.setlists, ...imported];
+                            await this.saveAllData();
+                            this.renderSetlists();
+                            UI.showToast(`${imported.length} set lists importados`);
+                            return;
+                        }
+
+                        if (data.setlists) {
+                            const importedSetlists = data.setlists.map(item => SetList.fromJSON(item));
+                            this.setlists = [...this.setlists, ...importedSetlists];
+                        }
+
+                        if (data.groups) {
+                            const importedGroups = data.groups.map(item => Group.fromJSON(item));
+                            this.groups = [...this.groups, ...importedGroups];
+                        }
+
+                        await this.saveAllData();
+                        this.renderSetlists();
+                        this.renderGroups();
+                        UI.showToast('Datos importados exitosamente');
+                    } catch (error) {
+                        UI.showToast('Error al importar');
+                        console.error(error);
+                    }
+                };
+                reader.readAsText(file);
+                document.getElementById('fileInput').value = '';
             }
 
             // ===== COMPARTIR =====
@@ -2493,42 +2684,77 @@
                 );
             }
 
-            // ===== VISTAS =====
+            // ===== COMUNIDAD =====
 
-            showLoginScreen() {
-                document.getElementById('loginScreen').style.display = 'flex';
-                document.getElementById('appContent').style.display = 'none';
-            }
-
-            showAppContent() {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('appContent').style.display = 'block';
-                
-                const user = this.auth.getUser();
-                if (user) {
-                    const displayName = user.displayName || user.email?.split('@')[0] || 'Usuario';
-                    document.getElementById('userDisplayName').textContent = displayName;
-                    const initial = displayName.charAt(0).toUpperCase();
-                    document.getElementById('userAvatar').textContent = initial;
+            async loadCommunitySetlists() {
+                UI.showToast('Cargando comunidad...');
+                try {
+                    this.publicSetlists = await StorageManager.getPublicSetlists();
+                    UI.renderCommunity(this.publicSetlists);
+                    UI.showToast(`${this.publicSetlists.length} set lists disponibles`);
+                } catch (error) {
+                    console.error('Error cargando comunidad:', error);
+                    UI.showToast('Error cargando comunidad');
                 }
             }
 
-            showRegisterScreen() {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('registerForm').style.display = 'block';
-                document.getElementById('resetPasswordForm').style.display = 'none';
+            filterCommunity(query) {
+                const filtered = this.publicSetlists.filter(s => 
+                    s.name.toLowerCase().includes(query.toLowerCase()) ||
+                    s.key.toLowerCase().includes(query.toLowerCase()) ||
+                    (s.publisherName && s.publisherName.toLowerCase().includes(query.toLowerCase()))
+                );
+                UI.renderCommunity(filtered);
             }
 
-            showLoginScreenOnly() {
-                document.getElementById('loginForm').style.display = 'block';
-                document.getElementById('registerForm').style.display = 'none';
-                document.getElementById('resetPasswordForm').style.display = 'none';
+            async viewPublicSetlist(publicId) {
+                const setlist = this.publicSetlists.find(s => s.publicId === publicId);
+                if (!setlist) {
+                    UI.showToast('Set list no encontrado');
+                    return;
+                }
+
+                this.currentPublicSetlist = setlist;
+                this.currentPublicSongIndex = null;
+                UI.showView('public-songs-view');
+                UI.renderPublicSongs(setlist);
             }
 
-            showResetPasswordScreen() {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('registerForm').style.display = 'none';
-                document.getElementById('resetPasswordForm').style.display = 'block';
+            openPublicSong(index) {
+                const setlist = this.currentPublicSetlist;
+                if (!setlist || !setlist.songs[index]) return;
+                this.currentPublicSongIndex = index;
+                UI.renderPublicLyrics(setlist.songs[index]);
+                UI.showView('public-lyrics-view');
+            }
+
+            async importPublicSetlist(publicId) {
+                const user = this.auth.getUser();
+                if (!user) {
+                    UI.showToast('Debes iniciar sesión para importar');
+                    return;
+                }
+
+                const existing = this.setlists.find(s => s.publicId === publicId);
+                if (existing) {
+                    UI.showToast('Ya tienes este set list en tu biblioteca');
+                    return;
+                }
+
+                UI.showConfirm(
+                    '¿Importar este set list a tu biblioteca?',
+                    async () => {
+                        const setlist = await StorageManager.importPublicSetlist(publicId, user.uid);
+                        if (setlist) {
+                            this.setlists.push(setlist);
+                            await this.saveAllData();
+                            this.renderSetlists();
+                            UI.showToast(`"${setlist.name}" importado a tu biblioteca`);
+                        } else {
+                            UI.showToast('Error al importar');
+                        }
+                    }
+                );
             }
 
             // ===== MODALES DE CREACIÓN =====
@@ -2589,65 +2815,42 @@
                 );
             }
 
-            // ===== EXPORTAR/IMPORTAR =====
+            // ===== VISTAS =====
 
-            exportAllData() {
-                const data = {
-                    setlists: this.setlists.map(s => s.toJSON()),
-                    groups: this.groups.map(g => g.toJSON())
-                };
-
-                const json = JSON.stringify(data, null, 2);
-                const blob = new Blob([json], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `setlify-all-${new Date().toISOString().slice(0,10)}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                UI.showToast('Todos los datos exportados');
+            showLoginScreen() {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('appContent').style.display = 'none';
             }
 
-            importData(file) {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    try {
-                        const data = JSON.parse(e.target.result);
-                        
-                        // Si es un array de setlists (formato antiguo)
-                        if (Array.isArray(data)) {
-                            const imported = data.map(item => SetList.fromJSON(item));
-                            this.setlists = [...this.setlists, ...imported];
-                            await this.saveAllData();
-                            this.renderSetlists();
-                            UI.showToast(`${imported.length} set lists importados`);
-                            return;
-                        }
+            showAppContent() {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContent').style.display = 'block';
+                
+                const user = this.auth.getUser();
+                if (user) {
+                    const displayName = user.displayName || user.email?.split('@')[0] || 'Usuario';
+                    document.getElementById('userDisplayName').textContent = displayName;
+                    const initial = displayName.charAt(0).toUpperCase();
+                    document.getElementById('userAvatar').textContent = initial;
+                }
+            }
 
-                        // Nuevo formato con setlists y groups
-                        if (data.setlists) {
-                            const importedSetlists = data.setlists.map(item => SetList.fromJSON(item));
-                            this.setlists = [...this.setlists, ...importedSetlists];
-                        }
+            showRegisterScreen() {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+                document.getElementById('resetPasswordForm').style.display = 'none';
+            }
 
-                        if (data.groups) {
-                            const importedGroups = data.groups.map(item => Group.fromJSON(item));
-                            this.groups = [...this.groups, ...importedGroups];
-                        }
+            showLoginScreenOnly() {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('resetPasswordForm').style.display = 'none';
+            }
 
-                        await this.saveAllData();
-                        this.renderSetlists();
-                        this.renderGroups();
-                        UI.showToast('Datos importados exitosamente');
-                    } catch (error) {
-                        UI.showToast('Error al importar');
-                        console.error(error);
-                    }
-                };
-                reader.readAsText(file);
-                document.getElementById('fileInput').value = '';
+            showResetPasswordScreen() {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('resetPasswordForm').style.display = 'block';
             }
 
             async saveAndRender() {
