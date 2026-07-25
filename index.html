@@ -103,13 +103,12 @@
                     <span class="brand-text">Setlify</span>
                 </div>
                 <div class="app-bar-actions">
-                    <!-- Perfil de usuario -->
                     <div id="userProfile" class="user-profile">
                         <div id="userAvatar" class="user-avatar">J</div>
                         <span id="userDisplayName" class="user-name"></span>
                     </div>
                     <button id="logoutBtn" class="logout-btn">Salir</button>
-                    <button id="btnExport" class="icon-btn" title="Exportar datos">
+                    <button id="btnExport" class="icon-btn" title="Exportar todos los datos">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="7 10 12 15 17 10"/>
@@ -351,7 +350,24 @@
 
                 container.innerHTML = setlists.map(setlist => `
                     <div class="card" data-id="${setlist.id}">
-                        <h3>${UI.escapeHtml(setlist.name)}</h3>
+                        <div class="card-header">
+                            <h3>${UI.escapeHtml(setlist.name)}</h3>
+                            <div class="card-actions">
+                                <button class="btn-export-single" data-id="${setlist.id}" title="Exportar este set list">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7 10 12 15 17 10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                </button>
+                                <button class="btn-delete" data-id="${setlist.id}" title="Eliminar set list">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                         <span class="key-badge">Tonalidad: ${setlist.key}</span>
                         <div class="song-count">${setlist.getSongCount()} canciones</div>
                     </div>
@@ -364,7 +380,6 @@
 
                 document.getElementById('setlist-title').textContent = setlist.name;
 
-                // Mostrar botón de compartir
                 const shareBtn = document.getElementById('btnShareSetlist');
                 if (shareBtn) {
                     shareBtn.style.display = setlist.songs.length > 0 ? 'inline-flex' : 'none';
@@ -384,11 +399,19 @@
 
                 container.innerHTML = setlist.songs.map((song, index) => `
                     <div class="song-item" data-index="${index}">
-                        <div class="song-info">
+                        <div class="song-info" onclick="window.app.openSong(${index})">
                             <div class="song-title">${UI.escapeHtml(song.title)}</div>
                             <div class="song-artist">${UI.escapeHtml(song.artist || 'Artista desconocido')}</div>
                         </div>
-                        <span class="song-key">${song.key}</span>
+                        <div class="song-actions">
+                            <span class="song-key">${song.key}</span>
+                            <button class="btn-delete-song" data-index="${index}" title="Eliminar canción">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 `).join('');
             }
@@ -485,22 +508,6 @@
                 const toast = document.createElement('div');
                 toast.className = 'toast';
                 toast.textContent = message;
-                toast.style.cssText = `
-                    position: fixed;
-                    bottom: 24px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: #1A1A2E;
-                    color: white;
-                    padding: 12px 24px;
-                    border-radius: 8px;
-                    font-size: 14px;
-                    z-index: 3000;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    animation: fadeIn 0.3s ease;
-                    max-width: 90%;
-                    text-align: center;
-                `;
                 document.body.appendChild(toast);
 
                 setTimeout(() => {
@@ -627,6 +634,7 @@
             }
 
             setupEventListeners() {
+                // Autenticación
                 document.getElementById('loginForm')?.addEventListener('submit', (e) => {
                     e.preventDefault();
                     this.handleLogin();
@@ -666,6 +674,7 @@
                     this.handleResetPassword();
                 });
 
+                // Acciones principales
                 document.getElementById('btnAddSetlist')?.addEventListener('click', () => {
                     this.showAddSetlistModal();
                 });
@@ -688,22 +697,9 @@
                     this.renderSongs();
                 });
 
-                document.getElementById('setlists-list')?.addEventListener('click', (e) => {
-                    const card = e.target.closest('.card');
-                    if (card) {
-                        this.openSetlist(card.dataset.id);
-                    }
-                });
-
-                document.getElementById('songs-list')?.addEventListener('click', (e) => {
-                    const item = e.target.closest('.song-item');
-                    if (item) {
-                        this.openSong(parseInt(item.dataset.index));
-                    }
-                });
-
+                // Exportar/Importar
                 document.getElementById('btnExport')?.addEventListener('click', () => {
-                    this.exportData();
+                    this.exportAllData();
                 });
 
                 document.getElementById('btnImport')?.addEventListener('click', () => {
@@ -716,9 +712,44 @@
                     }
                 });
 
+                // Modal
                 document.getElementById('modal')?.addEventListener('click', (e) => {
                     if (e.target === e.currentTarget) {
                         UI.closeModal();
+                    }
+                });
+
+                // ===== EVENTOS CON DELEGACIÓN =====
+                
+                // Setlists: eliminar, exportar individual, abrir
+                document.getElementById('setlists-list')?.addEventListener('click', (e) => {
+                    const deleteBtn = e.target.closest('.btn-delete');
+                    if (deleteBtn) {
+                        e.stopPropagation();
+                        this.deleteSetlist(deleteBtn.dataset.id);
+                        return;
+                    }
+                    
+                    const exportBtn = e.target.closest('.btn-export-single');
+                    if (exportBtn) {
+                        e.stopPropagation();
+                        this.exportSingleSetlist(exportBtn.dataset.id);
+                        return;
+                    }
+                    
+                    const card = e.target.closest('.card');
+                    if (card) {
+                        this.openSetlist(card.dataset.id);
+                    }
+                });
+
+                // Canciones: eliminar
+                document.getElementById('songs-list')?.addEventListener('click', (e) => {
+                    const deleteBtn = e.target.closest('.btn-delete-song');
+                    if (deleteBtn) {
+                        e.stopPropagation();
+                        this.deleteSong(parseInt(deleteBtn.dataset.index));
+                        return;
                     }
                 });
             }
@@ -804,6 +835,64 @@
                 }
             }
 
+            // ===== ELIMINAR SET LIST =====
+
+            async deleteSetlist(id) {
+                const setlist = this.setlists.find(s => s.id === id);
+                if (!setlist) return;
+
+                UI.showConfirm(
+                    `¿Estás seguro de que deseas eliminar el set list "${setlist.name}"?\nEsta acción no se puede deshacer.`,
+                    async () => {
+                        this.setlists = this.setlists.filter(s => s.id !== id);
+                        await this.saveUserData();
+                        this.renderSetlists();
+                        UI.showToast('Set list eliminado');
+                    }
+                );
+            }
+
+            // ===== ELIMINAR CANCIÓN =====
+
+            async deleteSong(index) {
+                const setlist = this.getCurrentSetlist();
+                if (!setlist || !setlist.songs[index]) return;
+
+                const song = setlist.songs[index];
+                
+                UI.showConfirm(
+                    `¿Eliminar la canción "${song.title}"?`,
+                    async () => {
+                        setlist.songs.splice(index, 1);
+                        await this.saveUserData();
+                        this.renderSongs();
+                        UI.showToast('Canción eliminada');
+                    }
+                );
+            }
+
+            // ===== EXPORTAR SET LIST INDIVIDUAL =====
+
+            exportSingleSetlist(id) {
+                const setlist = this.setlists.find(s => s.id === id);
+                if (!setlist) {
+                    UI.showToast('Set list no encontrado');
+                    return;
+                }
+
+                const json = JSON.stringify(setlist.toJSON(), null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `setlist-${setlist.name.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                UI.showToast(`"${setlist.name}" exportado`);
+            }
+
             // ===== COMPARTIR EN REDES SOCIALES =====
 
             async shareSetlist() {
@@ -818,7 +907,6 @@
                     return;
                 }
 
-                // Generar texto para compartir
                 const songList = setlist.songs.map((song, i) => 
                     `${i + 1}. ${song.title}${song.artist ? ' - ' + song.artist : ''} (${song.key})`
                 ).join('\n');
@@ -828,7 +916,6 @@
                                   `Canciones:\n${songList}\n\n` +
                                   `Creado con Setlify`;
 
-                // Usar Web Share API (nativa en móviles)
                 if (navigator.share) {
                     try {
                         await navigator.share({
@@ -846,7 +933,6 @@
                     }
                 }
 
-                // Fallback: copiar al portapapeles
                 try {
                     await navigator.clipboard.writeText(shareText);
                     UI.showToast('Texto copiado al portapapeles');
@@ -1080,7 +1166,7 @@
 
             // ===== EXPORTAR/IMPORTAR =====
 
-            exportData() {
+            exportAllData() {
                 if (this.setlists.length === 0) {
                     UI.showToast('No hay datos para exportar');
                     return;
@@ -1091,12 +1177,12 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `setlify-${new Date().toISOString().slice(0,10)}.json`;
+                a.download = `setlify-all-${new Date().toISOString().slice(0,10)}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                UI.showToast('Datos exportados');
+                UI.showToast('Todos los datos exportados');
             }
 
             importData(file) {
@@ -1104,21 +1190,39 @@
                 reader.onload = async (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
-                        if (!Array.isArray(data)) {
-                            UI.showToast('Formato inválido');
+                        
+                        // Si es un set list individual
+                        if (data.id && data.name && data.key !== undefined) {
+                            UI.showConfirm(
+                                `Importar el set list "${data.name}"?`,
+                                async () => {
+                                    const setlist = SetList.fromJSON(data);
+                                    setlist.id = crypto.randomUUID();
+                                    this.setlists.push(setlist);
+                                    await this.saveUserData();
+                                    this.renderSetlists();
+                                    UI.showToast(`"${setlist.name}" importado`);
+                                }
+                            );
                             return;
                         }
-
-                        UI.showConfirm(
-                            `Se importarán ${data.length} set lists. ¿Agregar?`,
-                            async () => {
-                                const imported = data.map(item => SetList.fromJSON(item));
-                                this.setlists = [...this.setlists, ...imported];
-                                await this.saveUserData();
-                                this.renderSetlists();
-                                UI.showToast(`${imported.length} set lists importados`);
-                            }
-                        );
+                        
+                        // Si es un array de set lists
+                        if (Array.isArray(data)) {
+                            UI.showConfirm(
+                                `Se importarán ${data.length} set lists. ¿Agregar?`,
+                                async () => {
+                                    const imported = data.map(item => SetList.fromJSON(item));
+                                    this.setlists = [...this.setlists, ...imported];
+                                    await this.saveUserData();
+                                    this.renderSetlists();
+                                    UI.showToast(`${imported.length} set lists importados`);
+                                }
+                            );
+                            return;
+                        }
+                        
+                        UI.showToast('Formato de archivo no válido');
                     } catch (error) {
                         UI.showToast('Error al importar');
                         console.error(error);
