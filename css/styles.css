@@ -1174,3 +1174,117 @@ body {
         height: 12px;
     }
 }
+
+/* ============================================
+   ESTILOS PARA GRUPOS
+   ============================================ */
+
+/* Información del grupo */
+.group-info {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.group-description {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+/* Miembros del grupo */
+.group-members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--divider);
+}
+
+.members-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--divider);
+    min-height: 40px;
+}
+
+.member-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.member-item:hover {
+    background: var(--accent);
+}
+
+.member-item .btn-remove-member {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: all var(--transition);
+}
+
+.member-item .btn-remove-member:hover {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+/* Botón de invitación en miembros */
+#btnInviteMemberInline {
+    margin-left: auto;
+}
+
+/* Ajustes responsive para grupos */
+@media (max-width: 600px) {
+    .group-members-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    #btnInviteMemberInline {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .members-list {
+        padding: 6px 10px;
+    }
+
+    .member-item {
+        font-size: 13px;
+        padding: 4px 6px;
+    }
+
+    .group-info .key-badge {
+        font-size: 11px;
+        padding: 2px 10px;
+    }
+
+    .group-description {
+        font-size: 13px;
+    }
+}

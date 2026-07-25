@@ -129,19 +129,26 @@
 
         <!-- Navegación Inferior -->
         <nav class="bottom-nav">
-            <button class="nav-item active" data-view="setlists-view">
+            <button class="nav-item" data-view="setlists-view">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9 22 9 12 15 12 15 22"/>
                 </svg>
                 <span>Mis Set Lists</span>
             </button>
-            <button class="nav-item" data-view="community-view">
+            <button class="nav-item active" data-view="groups-view">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                     <circle cx="9" cy="7" r="4"/>
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Grupos</span>
+            </button>
+            <button class="nav-item" data-view="community-view">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/>
+                    <circle cx="12" cy="10" r="3"/>
                 </svg>
                 <span>Comunidad</span>
             </button>
@@ -149,7 +156,7 @@
 
         <main class="container">
             <!-- Vista de SetLists -->
-            <section id="setlists-view" class="view active">
+            <section id="setlists-view" class="view">
                 <div class="view-header">
                     <h2>Mis Set Lists</h2>
                     <div style="display: flex; gap: 8px;">
@@ -165,7 +172,7 @@
                 <div id="setlists-list" class="cards-grid"></div>
             </section>
 
-            <!-- Vista de Canciones -->
+            <!-- Vista de Canciones (Mis Set Lists) -->
             <section id="songs-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToSetlists" class="back-btn">
@@ -176,7 +183,6 @@
                     </button>
                     <h2 id="setlist-title">Set List</h2>
                     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <!-- SWITCH DE PUBLICACIÓN -->
                         <div class="toggle-container" id="publishToggle" style="display:none;">
                             <span class="toggle-label">Público</span>
                             <label class="toggle-switch">
@@ -232,6 +238,99 @@
                     </button>
                 </div>
                 <div id="lyrics-content" class="lyrics-content"></div>
+            </section>
+
+            <!-- ===== VISTA DE GRUPOS ===== -->
+            <section id="groups-view" class="view active">
+                <div class="view-header">
+                    <h2>Grupos de Alabanza</h2>
+                    <button id="btnAddGroup" class="primary-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Nuevo Grupo
+                    </button>
+                </div>
+                <div id="groups-list" class="cards-grid"></div>
+            </section>
+
+            <!-- Vista de Detalle de Grupo -->
+            <section id="group-detail-view" class="view">
+                <div class="view-header">
+                    <button id="btnBackToGroups" class="back-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Volver
+                    </button>
+                    <h2 id="group-title">Grupo</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="btnInviteMember" class="primary-btn small" style="background: #F57C00;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="8.5" cy="7" r="4"/>
+                                <line x1="20" y1="8" x2="20" y2="14"/>
+                                <line x1="23" y1="11" x2="17" y2="11"/>
+                            </svg>
+                            Invitar
+                        </button>
+                        <button id="btnAddGroupSetlist" class="primary-btn small">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Set List
+                        </button>
+                        <button id="btnImportToGroup" class="primary-btn small secondary">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Importar
+                        </button>
+                    </div>
+                </div>
+                <div id="group-members" style="margin-bottom: 16px;"></div>
+                <div id="group-setlists" class="cards-grid"></div>
+            </section>
+
+            <!-- Vista de Canciones del Grupo -->
+            <section id="group-songs-view" class="view">
+                <div class="view-header">
+                    <button id="btnBackToGroupDetail" class="back-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Volver
+                    </button>
+                    <h2 id="group-setlist-title">Set List del Grupo</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="btnAddGroupSong" class="primary-btn small">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Canción
+                        </button>
+                    </div>
+                </div>
+                <div id="group-songs-list" class="songs-list"></div>
+            </section>
+
+            <!-- Vista de Letras del Grupo -->
+            <section id="group-lyrics-view" class="view">
+                <div class="view-header">
+                    <button id="btnBackToGroupSongs" class="back-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Volver
+                    </button>
+                    <h2 id="group-song-title">Canción</h2>
+                </div>
+                <div id="group-lyrics-content" class="lyrics-content"></div>
             </section>
 
             <!-- ===== VISTA DE COMUNIDAD ===== -->
@@ -400,6 +499,71 @@
         }
 
         // ============================================
+        // MODELO DE GRUPO
+        // ============================================
+        class Group {
+            constructor(id, name, description) {
+                this.id = id || crypto.randomUUID();
+                this.name = name;
+                this.description = description || '';
+                this.members = [];
+                this.setlists = [];
+                this.createdBy = null;
+                this.createdAt = new Date().toISOString();
+            }
+
+            addMember(email) {
+                if (!this.members.includes(email)) {
+                    this.members.push(email);
+                }
+                return this;
+            }
+
+            removeMember(email) {
+                this.members = this.members.filter(m => m !== email);
+                return this;
+            }
+
+            addSetlist(setlist) {
+                // Asegurar que el setlist tenga un ID único
+                const newSetlist = SetList.fromJSON(setlist.toJSON());
+                newSetlist.id = crypto.randomUUID();
+                this.setlists.push(newSetlist);
+                return this;
+            }
+
+            removeSetlist(setlistId) {
+                this.setlists = this.setlists.filter(s => s.id !== setlistId);
+                return this;
+            }
+
+            getSetlist(id) {
+                return this.setlists.find(s => s.id === id);
+            }
+
+            toJSON() {
+                return {
+                    id: this.id,
+                    name: this.name,
+                    description: this.description,
+                    members: this.members,
+                    setlists: this.setlists.map(s => s.toJSON()),
+                    createdBy: this.createdBy,
+                    createdAt: this.createdAt
+                };
+            }
+
+            static fromJSON(data) {
+                const group = new Group(data.id, data.name, data.description);
+                group.members = data.members || [];
+                group.setlists = (data.setlists || []).map(s => SetList.fromJSON(s));
+                group.createdBy = data.createdBy || null;
+                group.createdAt = data.createdAt || new Date().toISOString();
+                return group;
+            }
+        }
+
+        // ============================================
         // STORAGE (Firebase)
         // ============================================
         class StorageManager {
@@ -428,6 +592,37 @@
                     return [];
                 } catch (error) {
                     console.error('Error cargando:', error);
+                    return [];
+                }
+            }
+
+            // ===== MÉTODOS PARA GRUPOS =====
+
+            static async saveGroups(userId, groups) {
+                try {
+                    await db.collection('groups').doc(userId).set({
+                        groups: groups.map(g => g.toJSON()),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    return { success: true };
+                } catch (error) {
+                    console.error('Error guardando grupos:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            static async loadGroups(userId) {
+                try {
+                    const doc = await db.collection('groups').doc(userId).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data.groups) {
+                            return data.groups.map(item => Group.fromJSON(item));
+                        }
+                    }
+                    return [];
+                } catch (error) {
+                    console.error('Error cargando grupos:', error);
                     return [];
                 }
             }
@@ -536,7 +731,8 @@
         class UI {
             static showView(viewId) {
                 document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                document.getElementById(viewId).classList.add('active');
+                const view = document.getElementById(viewId);
+                if (view) view.classList.add('active');
                 
                 document.querySelectorAll('.nav-item').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.view === viewId);
@@ -565,14 +761,14 @@
                             <h3>${UI.escapeHtml(setlist.name)}</h3>
                             <div class="card-actions">
                                 ${setlist.isPublic ? '<span class="public-badge">Público</span>' : ''}
-                                <button class="btn-export-single" data-id="${setlist.id}" title="Exportar este set list">
+                                <button class="btn-export-single" data-id="${setlist.id}" title="Exportar">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                         <polyline points="7 10 12 15 17 10"/>
                                         <line x1="12" y1="15" x2="12" y2="3"/>
                                     </svg>
                                 </button>
-                                <button class="btn-delete" data-id="${setlist.id}" title="Eliminar set list">
+                                <button class="btn-delete" data-id="${setlist.id}" title="Eliminar">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="3 6 5 6 21 6"/>
                                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -607,13 +803,8 @@
                     toggleContainer.classList.toggle('public', setlist.isPublic);
                 }
                 
-                if (editBtn) {
-                    editBtn.style.display = 'inline-flex';
-                }
-                
-                if (shareBtn) {
-                    shareBtn.style.display = hasSongs ? 'inline-flex' : 'none';
-                }
+                if (editBtn) editBtn.style.display = 'inline-flex';
+                if (shareBtn) shareBtn.style.display = hasSongs ? 'inline-flex' : 'none';
 
                 if (setlist.songs.length === 0) {
                     container.innerHTML = `
@@ -635,13 +826,13 @@
                         </div>
                         <div class="song-actions">
                             <span class="song-key">${song.key}</span>
-                            <button class="btn-edit-song" data-index="${index}" title="Editar canción">
+                            <button class="btn-edit-song" data-index="${index}" title="Editar">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
                             </button>
-                            <button class="btn-delete-song" data-index="${index}" title="Eliminar canción">
+                            <button class="btn-delete-song" data-index="${index}" title="Eliminar">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <line x1="18" y1="6" x2="6" y2="18"/>
                                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -655,6 +846,151 @@
             static renderLyrics(song) {
                 document.getElementById('song-title').textContent = song.title;
                 const container = document.getElementById('lyrics-content');
+                if (!container) return;
+                container.textContent = song.lyrics || 'No hay letra disponible.';
+            }
+
+            // ===== MÉTODOS PARA GRUPOS =====
+
+            static renderGroups(groups) {
+                const container = document.getElementById('groups-list');
+                if (!container) return;
+
+                if (groups.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p class="empty-message">
+                                No hay grupos de alabanza.<br>
+                                Crea tu primer grupo
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = groups.map(group => `
+                    <div class="card" data-id="${group.id}">
+                        <div class="card-header">
+                            <h3>${UI.escapeHtml(group.name)}</h3>
+                            <div class="card-actions">
+                                <button class="btn-delete-group" data-id="${group.id}" title="Eliminar grupo">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="group-info">
+                            <span class="key-badge">${group.members.length} miembros</span>
+                            <span class="key-badge" style="background: #E3F2FD; color: #0D47A1;">${group.setlists.length} set lists</span>
+                        </div>
+                        ${group.description ? `<p class="group-description">${UI.escapeHtml(group.description)}</p>` : ''}
+                    </div>
+                `).join('');
+            }
+
+            static renderGroupDetail(group) {
+                document.getElementById('group-title').textContent = group.name;
+
+                // Renderizar miembros
+                const membersContainer = document.getElementById('group-members');
+                if (membersContainer) {
+                    const memberCount = group.members.length;
+                    membersContainer.innerHTML = `
+                        <div class="group-members-header">
+                            <span class="members-label">👥 ${memberCount} miembro${memberCount !== 1 ? 's' : ''}</span>
+                            <button id="btnInviteMemberInline" class="primary-btn small" style="background: #F57C00;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="8.5" cy="7" r="4"/>
+                                    <line x1="20" y1="8" x2="20" y2="14"/>
+                                    <line x1="23" y1="11" x2="17" y2="11"/>
+                                </svg>
+                                Invitar
+                            </button>
+                        </div>
+                        <div class="members-list">
+                            ${group.members.length === 0 ? 
+                                '<p class="empty-message" style="padding: 8px 0;">No hay miembros aún</p>' :
+                                group.members.map(email => `
+                                    <div class="member-item">
+                                        <span>${UI.escapeHtml(email)}</span>
+                                        ${group.members.length > 1 ? `<button class="btn-remove-member" data-email="${email}" title="Eliminar miembro">✕</button>` : ''}
+                                    </div>
+                                `).join('')
+                            }
+                        </div>
+                    `;
+                }
+
+                // Renderizar setlists del grupo
+                const container = document.getElementById('group-setlists');
+                if (!container) return;
+
+                if (group.setlists.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p class="empty-message">
+                                No hay set lists en este grupo.<br>
+                                Crea uno nuevo o importa uno existente
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = group.setlists.map(setlist => `
+                    <div class="card" data-id="${setlist.id}">
+                        <div class="card-header">
+                            <h3>${UI.escapeHtml(setlist.name)}</h3>
+                            <div class="card-actions">
+                                <button class="btn-remove-group-setlist" data-id="${setlist.id}" title="Eliminar del grupo">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <span class="key-badge">Tonalidad: ${setlist.key}</span>
+                        <div class="song-count">${setlist.getSongCount()} canciones</div>
+                    </div>
+                `).join('');
+            }
+
+            static renderGroupSongs(setlist) {
+                const container = document.getElementById('group-songs-list');
+                if (!container) return;
+
+                document.getElementById('group-setlist-title').textContent = setlist.name;
+
+                if (setlist.songs.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p class="empty-message">
+                                No hay canciones en este set list.<br>
+                                Agrega tu primera canción
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = setlist.songs.map((song, index) => `
+                    <div class="song-item" onclick="window.app.openGroupSong(${index})">
+                        <div class="song-info">
+                            <div class="song-title">${UI.escapeHtml(song.title)}</div>
+                            <div class="song-artist">${UI.escapeHtml(song.artist || 'Artista desconocido')}</div>
+                        </div>
+                        <span class="song-key">${song.key}</span>
+                    </div>
+                `).join('');
+            }
+
+            static renderGroupLyrics(song) {
+                document.getElementById('group-song-title').textContent = song.title;
+                const container = document.getElementById('group-lyrics-content');
                 if (!container) return;
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
@@ -766,14 +1102,14 @@
                         <div class="form-group">
                             <label>${field.label}</label>
                             ${field.type === 'textarea' 
-                                ? `<textarea id="${field.id}" ${field.required ? 'required' : ''}>${field.value || ''}</textarea>`
+                                ? `<textarea id="${field.id}" ${field.required ? 'required' : ''} ${field.rows ? `rows="${field.rows}"` : ''}>${field.value || ''}</textarea>`
                                 : field.type === 'select'
                                 ? `<select id="${field.id}" ${field.required ? 'required' : ''}>
                                     ${field.options.map(opt => 
                                         `<option value="${opt}" ${opt === field.value ? 'selected' : ''}>${opt}</option>`
                                     ).join('')}
                                 </select>`
-                                : `<input type="${field.type || 'text'}" id="${field.id}" value="${field.value || ''}" ${field.required ? 'required' : ''}>`
+                                : `<input type="${field.type || 'text'}" id="${field.id}" value="${field.value || ''}" ${field.required ? 'required' : ''} ${field.placeholder ? `placeholder="${field.placeholder}"` : ''}>`
                             }
                         </div>
                     `;
@@ -944,15 +1280,19 @@
             constructor() {
                 this.auth = new AuthManager();
                 this.setlists = [];
+                this.groups = [];
                 this.currentSetlistId = null;
                 this.currentSongIndex = null;
+                this.currentGroupId = null;
+                this.currentGroupSetlistId = null;
+                this.currentGroupSongIndex = null;
                 this.publicSetlists = [];
                 this.currentPublicSetlist = null;
                 this.currentPublicSongIndex = null;
                 
                 this.auth.onAuthStateChanged((user) => {
                     if (user) {
-                        this.loadUserData();
+                        this.loadAllData();
                         this.showAppContent();
                         UI.showToast(`Bienvenido, ${user.displayName || user.email}`);
                     } else {
@@ -1014,13 +1354,15 @@
                     btn.addEventListener('click', () => {
                         const view = btn.dataset.view;
                         UI.showView(view);
-                        if (view === 'community-view') {
+                        if (view === 'groups-view') {
+                            this.renderGroups();
+                        } else if (view === 'community-view') {
                             this.loadCommunitySetlists();
                         }
                     });
                 });
 
-                // Acciones principales
+                // ===== SET LISTS =====
                 document.getElementById('btnAddSetlist')?.addEventListener('click', () => {
                     this.showAddSetlistModal();
                 });
@@ -1041,7 +1383,6 @@
                     this.shareSetlist();
                 });
 
-                // Toggle de publicación
                 document.getElementById('publishCheckbox')?.addEventListener('change', (e) => {
                     if (e.isTrusted) {
                         this.togglePublishSetlist();
@@ -1058,7 +1399,41 @@
                     this.renderSongs();
                 });
 
-                // Comunidad
+                // ===== GRUPOS =====
+                document.getElementById('btnAddGroup')?.addEventListener('click', () => {
+                    this.showAddGroupModal();
+                });
+
+                document.getElementById('btnInviteMember')?.addEventListener('click', () => {
+                    this.showInviteMemberModal();
+                });
+
+                document.getElementById('btnAddGroupSetlist')?.addEventListener('click', () => {
+                    this.showAddGroupSetlistModal();
+                });
+
+                document.getElementById('btnImportToGroup')?.addEventListener('click', () => {
+                    this.showImportToGroupModal();
+                });
+
+                document.getElementById('btnAddGroupSong')?.addEventListener('click', () => {
+                    this.showAddGroupSongModal();
+                });
+
+                document.getElementById('btnBackToGroups')?.addEventListener('click', () => {
+                    UI.showView('groups-view');
+                    this.renderGroups();
+                });
+
+                document.getElementById('btnBackToGroupDetail')?.addEventListener('click', () => {
+                    this.renderCurrentGroupDetail();
+                });
+
+                document.getElementById('btnBackToGroupSongs')?.addEventListener('click', () => {
+                    this.renderCurrentGroupSongs();
+                });
+
+                // ===== COMUNIDAD =====
                 document.getElementById('btnRefreshCommunity')?.addEventListener('click', () => {
                     this.loadCommunitySetlists();
                 });
@@ -1111,7 +1486,7 @@
 
                 // ===== EVENTOS CON DELEGACIÓN =====
                 
-                // Setlists: eliminar, exportar individual, abrir
+                // Setlists
                 document.getElementById('setlists-list')?.addEventListener('click', (e) => {
                     const deleteBtn = e.target.closest('.btn-delete');
                     if (deleteBtn) {
@@ -1133,7 +1508,7 @@
                     }
                 });
 
-                // Canciones: editar, eliminar, abrir
+                // Canciones
                 document.getElementById('songs-list')?.addEventListener('click', (e) => {
                     const editBtn = e.target.closest('.btn-edit-song');
                     if (editBtn) {
@@ -1150,7 +1525,62 @@
                     }
                 });
 
-                // Comunidad: importar y ver
+                // Grupos
+                document.getElementById('groups-list')?.addEventListener('click', (e) => {
+                    const deleteBtn = e.target.closest('.btn-delete-group');
+                    if (deleteBtn) {
+                        e.stopPropagation();
+                        this.deleteGroup(deleteBtn.dataset.id);
+                        return;
+                    }
+
+                    const card = e.target.closest('.card');
+                    if (card) {
+                        this.openGroup(card.dataset.id);
+                    }
+                });
+
+                // Setlists del grupo
+                document.getElementById('group-setlists')?.addEventListener('click', (e) => {
+                    const removeBtn = e.target.closest('.btn-remove-group-setlist');
+                    if (removeBtn) {
+                        e.stopPropagation();
+                        this.removeGroupSetlist(removeBtn.dataset.id);
+                        return;
+                    }
+
+                    const card = e.target.closest('.card');
+                    if (card) {
+                        this.openGroupSetlist(card.dataset.id);
+                    }
+                });
+
+                // Miembros del grupo
+                document.getElementById('group-members')?.addEventListener('click', (e) => {
+                    const removeBtn = e.target.closest('.btn-remove-member');
+                    if (removeBtn) {
+                        e.stopPropagation();
+                        this.removeMember(removeBtn.dataset.email);
+                        return;
+                    }
+
+                    const inviteBtn = e.target.closest('#btnInviteMemberInline');
+                    if (inviteBtn) {
+                        this.showInviteMemberModal();
+                    }
+                });
+
+                // Canciones del grupo
+                document.getElementById('group-songs-list')?.addEventListener('click', (e) => {
+                    // Solo abrir canción si no es un botón
+                    const songItem = e.target.closest('.song-item');
+                    if (songItem && !e.target.closest('button')) {
+                        const index = Array.from(songItem.parentElement.children).indexOf(songItem);
+                        this.openGroupSong(index);
+                    }
+                });
+
+                // Comunidad
                 document.getElementById('community-list')?.addEventListener('click', (e) => {
                     const importBtn = e.target.closest('.community-btn.import');
                     if (importBtn) {
@@ -1232,6 +1662,7 @@
                 UI.showConfirm('¿Estás seguro de que quieres cerrar sesión?', async () => {
                     await this.auth.logout();
                     this.setlists = [];
+                    this.groups = [];
                     this.showLoginScreen();
                     UI.showToast('Sesión cerrada');
                 });
@@ -1254,193 +1685,374 @@
                 }
             }
 
-            // ===== TOGGLE PUBLICAR / DESPUBLICAR =====
+            // ===== CARGA DE DATOS =====
 
-            async togglePublishSetlist() {
-                const setlist = this.getCurrentSetlist();
-                if (!setlist) {
-                    UI.showToast('No hay set list seleccionado');
-                    return;
-                }
-
-                if (setlist.songs.length === 0) {
-                    UI.showToast('El set list está vacío. Agrega canciones primero.');
-                    this.updateToggleState(false);
-                    return;
-                }
-
+            async loadAllData() {
                 const user = this.auth.getUser();
-                if (!user) {
-                    UI.showToast('Debes iniciar sesión');
-                    this.updateToggleState(false);
-                    return;
+                if (!user) return;
+
+                try {
+                    this.setlists = await StorageManager.loadUserSetlists(user.uid);
+                    this.groups = await StorageManager.loadGroups(user.uid);
+                    this.renderSetlists();
+                    this.renderGroups();
+                } catch (error) {
+                    console.error('Error cargando datos:', error);
+                    UI.showToast('Error cargando datos');
                 }
+            }
 
-                const userName = user.displayName || user.email?.split('@')[0] || 'Anónimo';
+            async saveAllData() {
+                const user = this.auth.getUser();
+                if (!user) return;
 
-                if (setlist.isPublic) {
-                    UI.showConfirm(
-                        `¿Despublicar "${setlist.name}" de la comunidad?`,
-                        async () => {
-                            const result = await StorageManager.unpublishSetlist(setlist);
-                            if (result.success) {
-                                setlist.isPublic = false;
-                                setlist.publishedBy = null;
-                                setlist.publisherName = null;
-                                await this.saveUserData();
-                                this.renderSongs();
-                                this.updateToggleState(false);
-                                UI.showToast(`"${setlist.name}" ya no es público`);
-                            } else {
-                                UI.showToast('Error: ' + result.error);
-                                this.updateToggleState(true);
-                            }
-                        },
-                        () => {
-                            this.updateToggleState(true);
+                try {
+                    await StorageManager.saveUserSetlists(user.uid, this.setlists);
+                    await StorageManager.saveGroups(user.uid, this.groups);
+                } catch (error) {
+                    console.error('Error guardando datos:', error);
+                    UI.showToast('Error guardando datos');
+                }
+            }
+
+            // ===== SET LISTS (igual que antes) =====
+
+            renderSetlists() {
+                UI.renderSetlists(this.setlists);
+            }
+
+            renderSongs() {
+                const setlist = this.getCurrentSetlist();
+                if (setlist) {
+                    UI.renderSongs(setlist);
+                }
+            }
+
+            getCurrentSetlist() {
+                return this.setlists.find(s => s.id === this.currentSetlistId);
+            }
+
+            openSetlist(id) {
+                this.currentSetlistId = id;
+                this.currentSongIndex = null;
+                UI.showView('songs-view');
+                this.renderSongs();
+            }
+
+            openSong(index) {
+                const setlist = this.getCurrentSetlist();
+                if (!setlist || !setlist.songs[index]) return;
+                this.currentSongIndex = index;
+                UI.renderLyrics(setlist.songs[index]);
+                UI.showView('lyrics-view');
+            }
+
+            // ===== GRUPOS =====
+
+            renderGroups() {
+                UI.renderGroups(this.groups);
+            }
+
+            renderCurrentGroupDetail() {
+                const group = this.getCurrentGroup();
+                if (group) {
+                    UI.showView('group-detail-view');
+                    UI.renderGroupDetail(group);
+                }
+            }
+
+            renderCurrentGroupSongs() {
+                const group = this.getCurrentGroup();
+                if (!group) return;
+                const setlist = group.getSetlist(this.currentGroupSetlistId);
+                if (setlist) {
+                    UI.showView('group-songs-view');
+                    UI.renderGroupSongs(setlist);
+                }
+            }
+
+            getCurrentGroup() {
+                return this.groups.find(g => g.id === this.currentGroupId);
+            }
+
+            openGroup(id) {
+                this.currentGroupId = id;
+                this.currentGroupSetlistId = null;
+                this.currentGroupSongIndex = null;
+                this.renderCurrentGroupDetail();
+            }
+
+            openGroupSetlist(id) {
+                this.currentGroupSetlistId = id;
+                this.currentGroupSongIndex = null;
+                this.renderCurrentGroupSongs();
+            }
+
+            openGroupSong(index) {
+                const group = this.getCurrentGroup();
+                if (!group) return;
+                const setlist = group.getSetlist(this.currentGroupSetlistId);
+                if (!setlist || !setlist.songs[index]) return;
+                this.currentGroupSongIndex = index;
+                UI.renderGroupLyrics(setlist.songs[index]);
+                UI.showView('group-lyrics-view');
+            }
+
+            // ===== MODALES DE GRUPOS =====
+
+            showAddGroupModal() {
+                UI.showModal(
+                    'Nuevo Grupo de Alabanza',
+                    [
+                        { id: 'groupName', label: 'Nombre del Grupo', type: 'text', required: true },
+                        { id: 'groupDescription', label: 'Descripción', type: 'textarea', rows: 3 }
+                    ],
+                    async (data) => {
+                        if (!data.groupName.trim()) {
+                            UI.showToast('Por favor ingresa un nombre');
+                            return;
                         }
-                    );
+                        const group = new Group(null, data.groupName.trim(), data.groupDescription.trim());
+                        const user = this.auth.getUser();
+                        if (user) {
+                            group.createdBy = user.uid;
+                            group.addMember(user.email);
+                        }
+                        this.groups.push(group);
+                        await this.saveAllData();
+                        this.renderGroups();
+                        UI.closeModal();
+                        UI.showToast(`Grupo "${group.name}" creado`);
+                    },
+                    'Crear Grupo'
+                );
+            }
+
+            showInviteMemberModal() {
+                const group = this.getCurrentGroup();
+                if (!group) {
+                    UI.showToast('No hay grupo seleccionado');
                     return;
                 }
+
+                UI.showModal(
+                    'Invitar Miembro',
+                    [
+                        { id: 'memberEmail', label: 'Correo electrónico', type: 'email', placeholder: 'ejemplo@dominio.com', required: true }
+                    ],
+                    async (data) => {
+                        const email = data.memberEmail.trim();
+                        if (!email) {
+                            UI.showToast('Por favor ingresa un email');
+                            return;
+                        }
+                        if (group.members.includes(email)) {
+                            UI.showToast('Este miembro ya está en el grupo');
+                            return;
+                        }
+                        group.addMember(email);
+                        await this.saveAllData();
+                        this.renderCurrentGroupDetail();
+                        UI.closeModal();
+                        UI.showToast(`Invitación enviada a ${email}`);
+                    },
+                    'Invitar'
+                );
+            }
+
+            removeMember(email) {
+                const group = this.getCurrentGroup();
+                if (!group) return;
 
                 UI.showConfirm(
-                    `¿Publicar "${setlist.name}" en la comunidad?`,
+                    `¿Eliminar a "${email}" del grupo?`,
                     async () => {
-                        const result = await StorageManager.publishSetlist(user.uid, setlist, userName);
-                        
-                        if (result.success) {
-                            setlist.isPublic = true;
-                            setlist.publishedBy = user.uid;
-                            setlist.publisherName = userName;
-                            await this.saveUserData();
-                            this.renderSongs();
-                            this.updateToggleState(true);
-                            UI.showToast(`"${setlist.name}" publicado en la comunidad`);
-                        } else {
-                            UI.showToast('Error al publicar: ' + result.error);
-                            this.updateToggleState(false);
-                        }
-                    },
-                    () => {
-                        this.updateToggleState(false);
+                        group.removeMember(email);
+                        await this.saveAllData();
+                        this.renderCurrentGroupDetail();
+                        UI.showToast('Miembro eliminado');
                     }
                 );
             }
 
-            updateToggleState(isPublic) {
-                const checkbox = document.getElementById('publishCheckbox');
-                const container = document.getElementById('publishToggle');
-                if (!checkbox || !container) return;
-
-                checkbox.checked = isPublic;
-                container.classList.toggle('public', isPublic);
-            }
-
-            // ===== EDITAR SET LIST =====
-
-            showEditSetlistModal() {
-                const setlist = this.getCurrentSetlist();
-                if (!setlist) {
-                    UI.showToast('No hay set list seleccionado');
+            showAddGroupSetlistModal() {
+                const group = this.getCurrentGroup();
+                if (!group) {
+                    UI.showToast('No hay grupo seleccionado');
                     return;
                 }
 
                 const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
                 UI.showModal(
-                    'Editar Set List',
+                    'Nuevo Set List en Grupo',
                     [
-                        { id: 'editName', label: 'Nombre del Set List', type: 'text', value: setlist.name, required: true },
-                        { id: 'editKey', label: 'Tonalidad', type: 'select', options: keys, value: setlist.key, required: true }
+                        { id: 'name', label: 'Nombre del Set List', type: 'text', required: true },
+                        { id: 'key', label: 'Tonalidad', type: 'select', options: keys, value: 'C', required: true }
                     ],
                     async (data) => {
-                        if (!data.editName.trim()) {
+                        if (!data.name.trim()) {
                             UI.showToast('Por favor ingresa un nombre');
                             return;
                         }
-
-                        const oldName = setlist.name;
-                        setlist.name = data.editName.trim();
-                        setlist.key = data.editKey;
-
-                        // Actualizar tonalidad de todas las canciones
-                        setlist.songs.forEach(song => {
-                            song.key = setlist.key;
-                        });
-
-                        // Si está publicado, actualizar en la comunidad
-                        if (setlist.isPublic) {
-                            await StorageManager.updatePublicSetlist(setlist);
-                        }
-
-                        await this.saveUserData();
-                        this.renderSongs();
-                        this.renderSetlists();
+                        const setlist = new SetList(null, data.name.trim(), data.key);
+                        group.addSetlist(setlist);
+                        await this.saveAllData();
+                        this.renderCurrentGroupDetail();
                         UI.closeModal();
-                        UI.showToast(`"${oldName}" actualizado a "${setlist.name}"`);
+                        UI.showToast(`Set List "${setlist.name}" agregado al grupo`);
                     },
-                    'Guardar cambios'
+                    'Crear Set List'
                 );
             }
 
-            // ===== EDITAR CANCIÓN =====
-
-            showEditSongModal(index) {
-                const setlist = this.getCurrentSetlist();
-                if (!setlist) return;
-
-                // Si no se pasa índice, usar el actual
-                if (index === undefined) {
-                    index = this.currentSongIndex;
-                }
-
-                if (index === null || index === undefined || !setlist.songs[index]) {
-                    UI.showToast('Canción no encontrada');
+            showAddGroupSongModal() {
+                const group = this.getCurrentGroup();
+                if (!group) return;
+                const setlist = group.getSetlist(this.currentGroupSetlistId);
+                if (!setlist) {
+                    UI.showToast('Primero selecciona un set list del grupo');
                     return;
                 }
 
-                const song = setlist.songs[index];
-
                 UI.showModal(
-                    'Editar Canción',
+                    'Agregar Canción al Grupo',
                     [
-                        { id: 'editTitle', label: 'Título', type: 'text', value: song.title, required: true },
-                        { id: 'editArtist', label: 'Artista', type: 'text', value: song.artist || '' },
-                        { id: 'editKey', label: 'Tonalidad', type: 'text', value: song.key, required: true },
-                        { id: 'editLyrics', label: 'Letra', type: 'textarea', value: song.lyrics || '' }
+                        { id: 'title', label: 'Título', type: 'text', required: true },
+                        { id: 'artist', label: 'Artista', type: 'text' },
+                        { id: 'key', label: 'Tonalidad', type: 'text', value: setlist.key, required: true },
+                        { id: 'lyrics', label: 'Letra', type: 'textarea' }
                     ],
                     async (data) => {
-                        if (!data.editTitle.trim()) {
+                        if (!data.title.trim()) {
                             UI.showToast('Por favor ingresa un título');
                             return;
                         }
-
-                        const oldTitle = song.title;
-                        song.title = data.editTitle.trim();
-                        song.artist = data.editArtist.trim();
-                        song.key = data.editKey.trim();
-                        song.lyrics = data.editLyrics;
-
-                        // Actualizar también en la vista de letras si está abierta
-                        if (this.currentSongIndex === index) {
-                            UI.renderLyrics(song);
-                        }
-
-                        // Si el setlist está publicado, actualizar en la comunidad
-                        if (setlist.isPublic) {
-                            await StorageManager.updatePublicSetlist(setlist);
-                        }
-
-                        await this.saveUserData();
-                        this.renderSongs();
+                        const song = new Song(null, data.title.trim(), data.artist.trim(), data.key, data.lyrics);
+                        setlist.addSong(song);
+                        await this.saveAllData();
+                        this.renderCurrentGroupSongs();
                         UI.closeModal();
-                        UI.showToast(`"${oldTitle}" actualizado a "${song.title}"`);
+                        UI.showToast('Canción agregada al grupo');
                     },
-                    'Guardar cambios'
+                    'Agregar'
                 );
             }
 
-            // ===== COMUNIDAD =====
+            showImportToGroupModal() {
+                const group = this.getCurrentGroup();
+                if (!group) {
+                    UI.showToast('No hay grupo seleccionado');
+                    return;
+                }
+
+                // Crear lista de setlists disponibles para importar
+                const availableSetlists = [...this.setlists];
+                
+                // También incluir setlists públicos de la comunidad
+                const communitySetlists = this.publicSetlists || [];
+
+                const options = [
+                    ...availableSetlists.map(s => ({ value: `my_${s.id}`, label: `📁 ${s.name} (${s.key})` })),
+                    ...communitySetlists.map(s => ({ value: `pub_${s.publicId}`, label: `🌐 ${s.name} (${s.key}) - ${s.publisherName || 'Anónimo'}` }))
+                ];
+
+                if (options.length === 0) {
+                    UI.showToast('No hay set lists disponibles para importar');
+                    return;
+                }
+
+                UI.showModal(
+                    'Importar Set List al Grupo',
+                    [
+                        { 
+                            id: 'importSelect', 
+                            label: 'Selecciona un set list', 
+                            type: 'select', 
+                            options: options.map(o => o.label),
+                            value: options.length > 0 ? options[0].label : ''
+                        }
+                    ],
+                    async (data) => {
+                        const selectedLabel = data.importSelect;
+                        const selected = options.find(o => o.label === selectedLabel);
+                        if (!selected) {
+                            UI.showToast('Selección no válida');
+                            return;
+                        }
+
+                        let setlistToImport = null;
+
+                        // Buscar en mis setlists
+                        if (selected.value.startsWith('my_')) {
+                            const id = selected.value.replace('my_', '');
+                            setlistToImport = this.setlists.find(s => s.id === id);
+                        } 
+                        // Buscar en la comunidad
+                        else if (selected.value.startsWith('pub_')) {
+                            const publicId = selected.value.replace('pub_', '');
+                            const publicSetlist = this.publicSetlists.find(s => s.publicId === publicId);
+                            if (publicSetlist) {
+                                setlistToImport = await StorageManager.importPublicSetlist(publicId, this.auth.getUser()?.uid);
+                            }
+                        }
+
+                        if (!setlistToImport) {
+                            UI.showToast('Set list no encontrado');
+                            return;
+                        }
+
+                        // Verificar si ya existe en el grupo
+                        const exists = group.setlists.some(s => s.name === setlistToImport.name && s.key === setlistToImport.key);
+                        if (exists) {
+                            UI.showToast('Este set list ya está en el grupo');
+                            return;
+                        }
+
+                        group.addSetlist(setlistToImport);
+                        await this.saveAllData();
+                        this.renderCurrentGroupDetail();
+                        UI.closeModal();
+                        UI.showToast(`"${setlistToImport.name}" importado al grupo`);
+                    },
+                    'Importar'
+                );
+            }
+
+            removeGroupSetlist(setlistId) {
+                const group = this.getCurrentGroup();
+                if (!group) return;
+
+                const setlist = group.getSetlist(setlistId);
+                if (!setlist) return;
+
+                UI.showConfirm(
+                    `¿Eliminar "${setlist.name}" del grupo?`,
+                    async () => {
+                        group.removeSetlist(setlistId);
+                        await this.saveAllData();
+                        this.renderCurrentGroupDetail();
+                        UI.showToast('Set list eliminado del grupo');
+                    }
+                );
+            }
+
+            deleteGroup(groupId) {
+                const group = this.groups.find(g => g.id === groupId);
+                if (!group) return;
+
+                UI.showConfirm(
+                    `¿Eliminar el grupo "${group.name}"?`,
+                    async () => {
+                        this.groups = this.groups.filter(g => g.id !== groupId);
+                        await this.saveAllData();
+                        this.renderGroups();
+                        UI.showToast('Grupo eliminado');
+                    }
+                );
+            }
+
+            // ===== COMUNIDAD (igual que antes) =====
 
             async loadCommunitySetlists() {
                 UI.showToast('Cargando comunidad...');
@@ -1503,13 +2115,194 @@
                         const setlist = await StorageManager.importPublicSetlist(publicId, user.uid);
                         if (setlist) {
                             this.setlists.push(setlist);
-                            await this.saveUserData();
+                            await this.saveAllData();
                             this.renderSetlists();
                             UI.showToast(`"${setlist.name}" importado a tu biblioteca`);
                         } else {
                             UI.showToast('Error al importar');
                         }
                     }
+                );
+            }
+
+            // ===== TOGGLE PUBLICACIÓN =====
+
+            async togglePublishSetlist() {
+                const setlist = this.getCurrentSetlist();
+                if (!setlist) {
+                    UI.showToast('No hay set list seleccionado');
+                    return;
+                }
+
+                if (setlist.songs.length === 0) {
+                    UI.showToast('El set list está vacío. Agrega canciones primero.');
+                    this.updateToggleState(false);
+                    return;
+                }
+
+                const user = this.auth.getUser();
+                if (!user) {
+                    UI.showToast('Debes iniciar sesión');
+                    this.updateToggleState(false);
+                    return;
+                }
+
+                const userName = user.displayName || user.email?.split('@')[0] || 'Anónimo';
+
+                if (setlist.isPublic) {
+                    UI.showConfirm(
+                        `¿Despublicar "${setlist.name}" de la comunidad?`,
+                        async () => {
+                            const result = await StorageManager.unpublishSetlist(setlist);
+                            if (result.success) {
+                                setlist.isPublic = false;
+                                setlist.publishedBy = null;
+                                setlist.publisherName = null;
+                                await this.saveAllData();
+                                this.renderSongs();
+                                this.updateToggleState(false);
+                                UI.showToast(`"${setlist.name}" ya no es público`);
+                            } else {
+                                UI.showToast('Error: ' + result.error);
+                                this.updateToggleState(true);
+                            }
+                        },
+                        () => {
+                            this.updateToggleState(true);
+                        }
+                    );
+                    return;
+                }
+
+                UI.showConfirm(
+                    `¿Publicar "${setlist.name}" en la comunidad?`,
+                    async () => {
+                        const result = await StorageManager.publishSetlist(user.uid, setlist, userName);
+                        
+                        if (result.success) {
+                            setlist.isPublic = true;
+                            setlist.publishedBy = user.uid;
+                            setlist.publisherName = userName;
+                            await this.saveAllData();
+                            this.renderSongs();
+                            this.updateToggleState(true);
+                            UI.showToast(`"${setlist.name}" publicado en la comunidad`);
+                        } else {
+                            UI.showToast('Error al publicar: ' + result.error);
+                            this.updateToggleState(false);
+                        }
+                    },
+                    () => {
+                        this.updateToggleState(false);
+                    }
+                );
+            }
+
+            updateToggleState(isPublic) {
+                const checkbox = document.getElementById('publishCheckbox');
+                const container = document.getElementById('publishToggle');
+                if (!checkbox || !container) return;
+
+                checkbox.checked = isPublic;
+                container.classList.toggle('public', isPublic);
+            }
+
+            // ===== EDITAR SET LIST =====
+
+            showEditSetlistModal() {
+                const setlist = this.getCurrentSetlist();
+                if (!setlist) {
+                    UI.showToast('No hay set list seleccionado');
+                    return;
+                }
+
+                const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+                UI.showModal(
+                    'Editar Set List',
+                    [
+                        { id: 'editName', label: 'Nombre del Set List', type: 'text', value: setlist.name, required: true },
+                        { id: 'editKey', label: 'Tonalidad', type: 'select', options: keys, value: setlist.key, required: true }
+                    ],
+                    async (data) => {
+                        if (!data.editName.trim()) {
+                            UI.showToast('Por favor ingresa un nombre');
+                            return;
+                        }
+
+                        const oldName = setlist.name;
+                        setlist.name = data.editName.trim();
+                        setlist.key = data.editKey;
+
+                        setlist.songs.forEach(song => {
+                            song.key = setlist.key;
+                        });
+
+                        if (setlist.isPublic) {
+                            await StorageManager.updatePublicSetlist(setlist);
+                        }
+
+                        await this.saveAllData();
+                        this.renderSongs();
+                        this.renderSetlists();
+                        UI.closeModal();
+                        UI.showToast(`"${oldName}" actualizado a "${setlist.name}"`);
+                    },
+                    'Guardar cambios'
+                );
+            }
+
+            // ===== EDITAR CANCIÓN =====
+
+            showEditSongModal(index) {
+                const setlist = this.getCurrentSetlist();
+                if (!setlist) return;
+
+                if (index === undefined) {
+                    index = this.currentSongIndex;
+                }
+
+                if (index === null || index === undefined || !setlist.songs[index]) {
+                    UI.showToast('Canción no encontrada');
+                    return;
+                }
+
+                const song = setlist.songs[index];
+
+                UI.showModal(
+                    'Editar Canción',
+                    [
+                        { id: 'editTitle', label: 'Título', type: 'text', value: song.title, required: true },
+                        { id: 'editArtist', label: 'Artista', type: 'text', value: song.artist || '' },
+                        { id: 'editKey', label: 'Tonalidad', type: 'text', value: song.key, required: true },
+                        { id: 'editLyrics', label: 'Letra', type: 'textarea', value: song.lyrics || '' }
+                    ],
+                    async (data) => {
+                        if (!data.editTitle.trim()) {
+                            UI.showToast('Por favor ingresa un título');
+                            return;
+                        }
+
+                        const oldTitle = song.title;
+                        song.title = data.editTitle.trim();
+                        song.artist = data.editArtist.trim();
+                        song.key = data.editKey.trim();
+                        song.lyrics = data.editLyrics;
+
+                        if (this.currentSongIndex === index) {
+                            UI.renderLyrics(song);
+                        }
+
+                        if (setlist.isPublic) {
+                            await StorageManager.updatePublicSetlist(setlist);
+                        }
+
+                        await this.saveAllData();
+                        this.renderSongs();
+                        UI.closeModal();
+                        UI.showToast(`"${oldTitle}" actualizado a "${song.title}"`);
+                    },
+                    'Guardar cambios'
                 );
             }
 
@@ -1520,13 +2313,13 @@
                 if (!setlist) return;
 
                 UI.showConfirm(
-                    `¿Eliminar el set list "${setlist.name}"?\nEsta acción no se puede deshacer.`,
+                    `¿Eliminar el set list "${setlist.name}"?`,
                     async () => {
                         if (setlist.isPublic) {
                             await StorageManager.unpublishSetlist(setlist);
                         }
                         this.setlists = this.setlists.filter(s => s.id !== id);
-                        await this.saveUserData();
+                        await this.saveAllData();
                         this.renderSetlists();
                         UI.showToast('Set list eliminado');
                     }
@@ -1552,7 +2345,7 @@
                             setlist.publisherName = null;
                             this.updateToggleState(false);
                         }
-                        await this.saveUserData();
+                        await this.saveAllData();
                         this.renderSongs();
                         UI.showToast('Canción eliminada');
                     }
@@ -1581,7 +2374,7 @@
                 UI.showToast(`"${setlist.name}" exportado`);
             }
 
-            // ===== COMPARTIR EN REDES SOCIALES =====
+            // ===== COMPARTIR =====
 
             async shareSetlist() {
                 const setlist = this.getCurrentSetlist();
@@ -1591,7 +2384,7 @@
                 }
 
                 if (setlist.songs.length === 0) {
-                    UI.showToast('El set list está vacío. Agrega canciones primero.');
+                    UI.showToast('El set list está vacío');
                     return;
                 }
 
@@ -1738,65 +2531,6 @@
                 document.getElementById('resetPasswordForm').style.display = 'block';
             }
 
-            // ===== DATOS =====
-
-            async loadUserData() {
-                const user = this.auth.getUser();
-                if (!user) return;
-
-                try {
-                    this.setlists = await StorageManager.loadUserSetlists(user.uid);
-                    this.renderSetlists();
-                } catch (error) {
-                    console.error('Error cargando datos:', error);
-                    UI.showToast('Error cargando datos');
-                }
-            }
-
-            async saveUserData() {
-                const user = this.auth.getUser();
-                if (!user) return;
-
-                try {
-                    await StorageManager.saveUserSetlists(user.uid, this.setlists);
-                } catch (error) {
-                    console.error('Error guardando:', error);
-                    UI.showToast('Error guardando datos');
-                }
-            }
-
-            // ===== SETLISTS =====
-
-            renderSetlists() {
-                UI.renderSetlists(this.setlists);
-            }
-
-            renderSongs() {
-                const setlist = this.getCurrentSetlist();
-                if (setlist) {
-                    UI.renderSongs(setlist);
-                }
-            }
-
-            getCurrentSetlist() {
-                return this.setlists.find(s => s.id === this.currentSetlistId);
-            }
-
-            openSetlist(id) {
-                this.currentSetlistId = id;
-                this.currentSongIndex = null;
-                UI.showView('songs-view');
-                this.renderSongs();
-            }
-
-            openSong(index) {
-                const setlist = this.getCurrentSetlist();
-                if (!setlist || !setlist.songs[index]) return;
-                this.currentSongIndex = index;
-                UI.renderLyrics(setlist.songs[index]);
-                UI.showView('lyrics-view');
-            }
-
             // ===== MODALES DE CREACIÓN =====
 
             showAddSetlistModal() {
@@ -1815,7 +2549,7 @@
                         }
                         const setlist = new SetList(null, data.name.trim(), data.key);
                         this.setlists.push(setlist);
-                        await this.saveUserData();
+                        await this.saveAllData();
                         this.renderSetlists();
                         UI.closeModal();
                         UI.showToast('Set List creado');
@@ -1846,7 +2580,7 @@
                         }
                         const song = new Song(null, data.title.trim(), data.artist.trim(), data.key, data.lyrics);
                         setlist.addSong(song);
-                        await this.saveUserData();
+                        await this.saveAllData();
                         this.renderSongs();
                         UI.closeModal();
                         UI.showToast('Canción agregada');
@@ -1858,12 +2592,12 @@
             // ===== EXPORTAR/IMPORTAR =====
 
             exportAllData() {
-                if (this.setlists.length === 0) {
-                    UI.showToast('No hay datos para exportar');
-                    return;
-                }
+                const data = {
+                    setlists: this.setlists.map(s => s.toJSON()),
+                    groups: this.groups.map(g => g.toJSON())
+                };
 
-                const json = JSON.stringify(this.setlists.map(s => s.toJSON()), null, 2);
+                const json = JSON.stringify(data, null, 2);
                 const blob = new Blob([json], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1882,45 +2616,31 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         
-                        if (data.id && data.name && data.key !== undefined) {
-                            UI.showConfirm(
-                                `Importar el set list "${data.name}"?`,
-                                async () => {
-                                    const setlist = SetList.fromJSON(data);
-                                    setlist.id = crypto.randomUUID();
-                                    setlist.isPublic = false;
-                                    setlist.publishedBy = null;
-                                    setlist.publisherName = null;
-                                    this.setlists.push(setlist);
-                                    await this.saveUserData();
-                                    this.renderSetlists();
-                                    UI.showToast(`"${setlist.name}" importado`);
-                                }
-                            );
-                            return;
-                        }
-                        
+                        // Si es un array de setlists (formato antiguo)
                         if (Array.isArray(data)) {
-                            UI.showConfirm(
-                                `Se importarán ${data.length} set lists. ¿Agregar?`,
-                                async () => {
-                                    const imported = data.map(item => {
-                                        const s = SetList.fromJSON(item);
-                                        s.isPublic = false;
-                                        s.publishedBy = null;
-                                        s.publisherName = null;
-                                        return s;
-                                    });
-                                    this.setlists = [...this.setlists, ...imported];
-                                    await this.saveUserData();
-                                    this.renderSetlists();
-                                    UI.showToast(`${imported.length} set lists importados`);
-                                }
-                            );
+                            const imported = data.map(item => SetList.fromJSON(item));
+                            this.setlists = [...this.setlists, ...imported];
+                            await this.saveAllData();
+                            this.renderSetlists();
+                            UI.showToast(`${imported.length} set lists importados`);
                             return;
                         }
-                        
-                        UI.showToast('Formato de archivo no válido');
+
+                        // Nuevo formato con setlists y groups
+                        if (data.setlists) {
+                            const importedSetlists = data.setlists.map(item => SetList.fromJSON(item));
+                            this.setlists = [...this.setlists, ...importedSetlists];
+                        }
+
+                        if (data.groups) {
+                            const importedGroups = data.groups.map(item => Group.fromJSON(item));
+                            this.groups = [...this.groups, ...importedGroups];
+                        }
+
+                        await this.saveAllData();
+                        this.renderSetlists();
+                        this.renderGroups();
+                        UI.showToast('Datos importados exitosamente');
                     } catch (error) {
                         UI.showToast('Error al importar');
                         console.error(error);
@@ -1931,12 +2651,18 @@
             }
 
             async saveAndRender() {
-                await this.saveUserData();
+                await this.saveAllData();
                 const view = document.querySelector('.view.active');
                 if (view?.id === 'setlists-view') {
                     this.renderSetlists();
                 } else if (view?.id === 'songs-view') {
                     this.renderSongs();
+                } else if (view?.id === 'groups-view') {
+                    this.renderGroups();
+                } else if (view?.id === 'group-detail-view') {
+                    this.renderCurrentGroupDetail();
+                } else if (view?.id === 'group-songs-view') {
+                    this.renderCurrentGroupSongs();
                 }
             }
         }
