@@ -7,7 +7,7 @@ import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAHMdRKe5EUoiw9f7rTXZUpyW2Y02zPL4M",
-  authDomain: "setlify-bff8f.firebaseapp.com",
+  authDomain: "setlify-bff8f.firebaseapp.com",  // ← Debe ser este
   projectId: "setlify-bff8f",
   storageBucket: "setlify-bff8f.firebasestorage.app",
   messagingSenderId: "185457141481",
