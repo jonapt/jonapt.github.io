@@ -746,8 +746,9 @@
 
             static async findGroupByInviteCode(inviteCode) {
                 try {
+                    const code = inviteCode.toUpperCase().trim();
                     const snapshot = await db.collection('groups')
-                        .where('inviteCode', '==', inviteCode)
+                        .where('inviteCode', '==', code)
                         .get();
                     
                     if (!snapshot.empty) {
@@ -763,8 +764,10 @@
 
             static async joinGroupByInviteCode(inviteCode, userEmail) {
                 try {
+                    const code = inviteCode.toUpperCase().trim();
+                    
                     const snapshot = await db.collection('groups')
-                        .where('inviteCode', '==', inviteCode)
+                        .where('inviteCode', '==', code)
                         .get();
                     
                     if (snapshot.empty) {
@@ -778,12 +781,10 @@
                         return { success: false, error: 'Ya eres miembro de este grupo' };
                     }
 
-                    // Si ya tiene solicitud pendiente
                     if (group.pendingRequests.includes(userEmail)) {
                         return { success: false, error: 'Ya tienes una solicitud pendiente' };
                     }
 
-                    // Agregar a solicitudes pendientes
                     group.addPendingRequest(userEmail);
                     await db.collection('groups').doc(group.id).set(group.toJSON());
                     return { success: true, group: group, pending: true };
@@ -2077,9 +2078,10 @@
                     return;
                 }
 
+                const code = inviteCode.toUpperCase().trim();
                 UI.showToast('🔍 Buscando grupo...');
                 
-                const result = await StorageManager.joinGroupByInviteCode(inviteCode, user.email);
+                const result = await StorageManager.joinGroupByInviteCode(code, user.email);
                 
                 if (result.success) {
                     if (result.pending) {
@@ -2227,16 +2229,12 @@
                             return;
                         }
                         
-                        // Enviar invitación por email (código)
                         const inviteCode = group.inviteCode || 'N/A';
                         const message = `Has sido invitado a "${group.name}" en Setlify.\nCódigo: ${inviteCode}`;
                         
-                        // Aquí se podría enviar email real con Firebase Functions
-                        // Por ahora solo mostramos el código
                         UI.showToast(`📧 Invitación enviada a ${email}`);
                         UI.closeModal();
                         
-                        // Notificar al usuario invitado
                         UI.showModal(
                             'Invitación enviada',
                             [
