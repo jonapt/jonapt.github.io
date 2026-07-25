@@ -9,7 +9,6 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/styles.css">
     
-    <!-- Firebase SDK (CDN) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -242,7 +241,7 @@
                 <div id="lyrics-content" class="lyrics-content"></div>
             </section>
 
-            <!-- ===== VISTA DE GRUPOS MEJORADA ===== -->
+            <!-- ===== VISTA DE GRUPOS ===== -->
             <section id="groups-view" class="view active">
                 <div class="view-header">
                     <h2>Grupos de Alabanza</h2>
@@ -295,7 +294,6 @@
                     </div>
                 </div>
 
-                <!-- Info del Grupo -->
                 <div class="group-detail-card">
                     <div class="group-info-row">
                         <div class="group-stats">
@@ -316,7 +314,6 @@
                     <div id="groupDescription" class="group-description-text"></div>
                 </div>
 
-                <!-- Miembros -->
                 <div class="group-section">
                     <div class="section-header">
                         <h3>Miembros</h3>
@@ -333,7 +330,6 @@
                     <div id="group-members" class="members-container"></div>
                 </div>
 
-                <!-- Set Lists del Grupo -->
                 <div class="group-section">
                     <div class="section-header">
                         <h3>Set Lists del Grupo</h3>
@@ -562,11 +558,15 @@
                 this.setlists = [];
                 this.createdBy = null;
                 this.createdAt = new Date().toISOString();
+                this.invitedMembers = [];
             }
 
             addMember(email) {
                 if (!this.members.includes(email)) {
                     this.members.push(email);
+                }
+                if (this.invitedMembers.includes(email)) {
+                    this.invitedMembers = this.invitedMembers.filter(m => m !== email);
                 }
                 return this;
             }
@@ -596,6 +596,10 @@
                 return this.setlists.reduce((total, s) => total + s.getSongCount(), 0);
             }
 
+            isMember(email) {
+                return this.members.includes(email);
+            }
+
             toJSON() {
                 return {
                     id: this.id,
@@ -604,7 +608,8 @@
                     members: this.members,
                     setlists: this.setlists.map(s => s.toJSON()),
                     createdBy: this.createdBy,
-                    createdAt: this.createdAt
+                    createdAt: this.createdAt,
+                    invitedMembers: this.invitedMembers || []
                 };
             }
 
@@ -614,6 +619,7 @@
                 group.setlists = (data.setlists || []).map(s => SetList.fromJSON(s));
                 group.createdBy = data.createdBy || null;
                 group.createdAt = data.createdAt || new Date().toISOString();
+                group.invitedMembers = data.invitedMembers || [];
                 return group;
             }
         }
@@ -677,9 +683,10 @@
         }
 
         // ============================================
-        // STORAGE (Firebase)
+        // STORAGE (Firebase - Grupos Compartidos)
         // ============================================
         class StorageManager {
+            // SETLISTS
             static async saveUserSetlists(userId, setlists) {
                 try {
                     await db.collection('setlists').doc(userId).set({
@@ -709,34 +716,75 @@
                 }
             }
 
-            static async saveGroups(userId, groups) {
+            // ===== GRUPOS COMPARTIDOS (Firestore Global) =====
+
+            static async saveGroup(group) {
                 try {
-                    await db.collection('groups').doc(userId).set({
-                        groups: groups.map(g => g.toJSON()),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+                    await db.collection('groups').doc(group.id).set(group.toJSON());
                     return { success: true };
                 } catch (error) {
-                    console.error('Error guardando grupos:', error);
+                    console.error('Error guardando grupo:', error);
                     return { success: false, error: error.message };
                 }
             }
 
-            static async loadGroups(userId) {
+            static async deleteGroup(groupId) {
                 try {
-                    const doc = await db.collection('groups').doc(userId).get();
-                    if (doc.exists) {
-                        const data = doc.data();
-                        if (data.groups) {
-                            return data.groups.map(item => Group.fromJSON(item));
-                        }
-                    }
-                    return [];
+                    await db.collection('groups').doc(groupId).delete();
+                    return { success: true };
+                } catch (error) {
+                    console.error('Error eliminando grupo:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            static async loadGroups(userEmail) {
+                try {
+                    const snapshot = await db.collection('groups')
+                        .where('members', 'array-contains', userEmail)
+                        .get();
+                    
+                    const groups = [];
+                    snapshot.forEach(doc => {
+                        const group = Group.fromJSON(doc.data());
+                        groups.push(group);
+                    });
+                    return groups;
                 } catch (error) {
                     console.error('Error cargando grupos:', error);
                     return [];
                 }
             }
+
+            static async loadAllGroups() {
+                try {
+                    const snapshot = await db.collection('groups').get();
+                    const groups = [];
+                    snapshot.forEach(doc => {
+                        const group = Group.fromJSON(doc.data());
+                        groups.push(group);
+                    });
+                    return groups;
+                } catch (error) {
+                    console.error('Error cargando todos los grupos:', error);
+                    return [];
+                }
+            }
+
+            static async getGroup(groupId) {
+                try {
+                    const doc = await db.collection('groups').doc(groupId).get();
+                    if (doc.exists) {
+                        return Group.fromJSON(doc.data());
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error obteniendo grupo:', error);
+                    return null;
+                }
+            }
+
+            // ===== PUBLIC SETLISTS =====
 
             static async publishSetlist(userId, setlist, userName) {
                 try {
@@ -814,7 +862,7 @@
                 }
             }
 
-            static async importPublicSetlist(publicId, userId) {
+            static async importPublicSetlist(publicId) {
                 try {
                     const doc = await db.collection('public_setlists').doc(publicId).get();
                     if (doc.exists) {
@@ -943,7 +991,7 @@
                 }, duration);
             }
 
-            // ===== RENDER METHODS =====
+            // ===== RENDER =====
 
             static renderSetlists(setlists) {
                 const container = document.getElementById('setlists-list');
@@ -1050,8 +1098,6 @@
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
 
-            // ===== RENDER GRUPOS MEJORADO =====
-
             static renderGroups(groups) {
                 const container = document.getElementById('groups-list');
                 if (!container) return;
@@ -1059,7 +1105,7 @@
                 if (groups.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p class="empty-message">No hay grupos de alabanza.<br>Crea tu primer grupo</p>
+                            <p class="empty-message">No estás en ningún grupo.<br>Crea un grupo o espera una invitación</p>
                         </div>
                     `;
                     return;
@@ -1072,7 +1118,7 @@
                                 <h3>${UI.escapeHtml(group.name)}</h3>
                                 ${group.description ? `<p class="group-card-description">${UI.escapeHtml(group.description)}</p>` : ''}
                             </div>
-                            <button class="btn-delete-group" data-id="${group.id}" title="Eliminar grupo">
+                            <button class="btn-delete-group" data-id="${group.id}" title="Salir del grupo">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="3 6 5 6 21 6"/>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -1100,20 +1146,20 @@
             static renderGroupDetail(group) {
                 document.getElementById('group-title').textContent = group.name;
 
-                // Stats
                 document.getElementById('groupMemberCount').textContent = group.members.length;
                 document.getElementById('groupSetlistCount').textContent = group.setlists.length;
                 document.getElementById('groupSongCount').textContent = group.getTotalSongs();
 
-                // Descripción
                 const descContainer = document.getElementById('groupDescription');
                 if (descContainer) {
                     descContainer.textContent = group.description || 'Sin descripción';
                 }
 
-                // Miembros
                 const membersContainer = document.getElementById('group-members');
                 if (membersContainer) {
+                    const currentUserEmail = window.app?.auth?.getUser()?.email;
+                    const isCreator = currentUserEmail === group.members[0];
+                    
                     if (group.members.length === 0) {
                         membersContainer.innerHTML = `
                             <div class="empty-state small">
@@ -1125,13 +1171,15 @@
                             <div class="member-chip">
                                 <span class="member-avatar">${email.charAt(0).toUpperCase()}</span>
                                 <span class="member-email">${UI.escapeHtml(email)}</span>
-                                ${group.members.length > 1 ? `<button class="btn-remove-member" data-email="${email}" title="Eliminar miembro">✕</button>` : ''}
+                                ${isCreator && group.members.length > 1 && email !== currentUserEmail ? 
+                                    `<button class="btn-remove-member" data-email="${email}" title="Eliminar miembro">✕</button>` : 
+                                    ''
+                                }
                             </div>
                         `).join('');
                     }
                 }
 
-                // Set Lists
                 const container = document.getElementById('group-setlists');
                 if (!container) return;
 
@@ -1195,8 +1243,6 @@
                 if (!container) return;
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
-
-            // ===== COMUNIDAD =====
 
             static renderCommunity(setlists) {
                 const container = document.getElementById('community-list');
@@ -1288,8 +1334,6 @@
                 if (!container) return;
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
-
-            // ===== NOTIFICACIONES =====
 
             static renderNotifications(notifications) {
                 const container = document.getElementById('notifications-list');
@@ -1433,7 +1477,6 @@
                 this.currentPublicSetlist = null;
                 this.currentPublicSongIndex = null;
                 
-                // Configurar notificaciones
                 this.notificationManager.addListener((notifications) => {
                     UI.renderNotifications(notifications);
                     UI.updateNotificationBadge(this.notificationManager.getUnreadCount());
@@ -1504,7 +1547,7 @@
                         const view = btn.dataset.view;
                         UI.showView(view);
                         if (view === 'groups-view') {
-                            this.renderGroups();
+                            this.loadGroups();
                         } else if (view === 'community-view') {
                             this.loadCommunitySetlists();
                         }
@@ -1516,7 +1559,6 @@
                     const modal = document.getElementById('notificationModal');
                     if (modal) {
                         modal.classList.add('active');
-                        // Marcar como leídas al abrir
                         this.notificationManager.markAllAsRead();
                     }
                 });
@@ -1528,7 +1570,7 @@
                     }
                 });
 
-                // ===== SET LISTS =====
+                // SET LISTS
                 document.getElementById('btnAddSetlist')?.addEventListener('click', () => {
                     this.showAddSetlistModal();
                 });
@@ -1565,7 +1607,7 @@
                     this.renderSongs();
                 });
 
-                // ===== GRUPOS =====
+                // GRUPOS
                 document.getElementById('btnAddGroup')?.addEventListener('click', () => {
                     this.showAddGroupModal();
                 });
@@ -1588,7 +1630,7 @@
 
                 document.getElementById('btnBackToGroups')?.addEventListener('click', () => {
                     UI.showView('groups-view');
-                    this.renderGroups();
+                    this.loadGroups();
                 });
 
                 document.getElementById('btnBackToGroupDetail')?.addEventListener('click', () => {
@@ -1599,7 +1641,7 @@
                     this.renderCurrentGroupSongs();
                 });
 
-                // ===== COMUNIDAD =====
+                // COMUNIDAD
                 document.getElementById('btnRefreshCommunity')?.addEventListener('click', () => {
                     this.loadCommunitySetlists();
                 });
@@ -1651,14 +1693,12 @@
                     }
                 });
 
-                // Búsqueda en comunidad
                 document.getElementById('searchCommunity')?.addEventListener('input', (e) => {
                     this.filterCommunity(e.target.value);
                 });
 
-                // ===== EVENTOS CON DELEGACIÓN =====
+                // ===== DELEGACIÓN DE EVENTOS =====
                 
-                // Setlists
                 document.getElementById('setlists-list')?.addEventListener('click', (e) => {
                     const deleteBtn = e.target.closest('.btn-delete');
                     if (deleteBtn) {
@@ -1680,7 +1720,6 @@
                     }
                 });
 
-                // Canciones
                 document.getElementById('songs-list')?.addEventListener('click', (e) => {
                     const editBtn = e.target.closest('.btn-edit-song');
                     if (editBtn) {
@@ -1697,12 +1736,11 @@
                     }
                 });
 
-                // Grupos
                 document.getElementById('groups-list')?.addEventListener('click', (e) => {
                     const deleteBtn = e.target.closest('.btn-delete-group');
                     if (deleteBtn) {
                         e.stopPropagation();
-                        this.deleteGroup(deleteBtn.dataset.id);
+                        this.leaveGroup(deleteBtn.dataset.id);
                         return;
                     }
 
@@ -1712,7 +1750,6 @@
                     }
                 });
 
-                // Setlists del grupo
                 document.getElementById('group-setlists')?.addEventListener('click', (e) => {
                     const removeBtn = e.target.closest('.btn-remove-group-setlist');
                     if (removeBtn) {
@@ -1727,7 +1764,6 @@
                     }
                 });
 
-                // Miembros del grupo
                 document.getElementById('group-members')?.addEventListener('click', (e) => {
                     const removeBtn = e.target.closest('.btn-remove-member');
                     if (removeBtn) {
@@ -1742,7 +1778,6 @@
                     }
                 });
 
-                // Canciones del grupo
                 document.getElementById('group-songs-list')?.addEventListener('click', (e) => {
                     const songItem = e.target.closest('.song-item');
                     if (songItem && !e.target.closest('button')) {
@@ -1751,7 +1786,6 @@
                     }
                 });
 
-                // Comunidad
                 document.getElementById('community-list')?.addEventListener('click', (e) => {
                     const importBtn = e.target.closest('.community-btn.import');
                     if (importBtn) {
@@ -1864,12 +1898,9 @@
 
                 try {
                     this.setlists = await StorageManager.loadUserSetlists(user.uid);
-                    this.groups = await StorageManager.loadGroups(user.uid);
+                    await this.loadGroups();
                     this.renderSetlists();
                     this.renderGroups();
-                    
-                    // Verificar notificaciones de grupos
-                    this.checkGroupNotifications();
                 } catch (error) {
                     console.error('Error cargando datos:', error);
                     UI.showToast('Error cargando datos');
@@ -1882,54 +1913,62 @@
 
                 try {
                     await StorageManager.saveUserSetlists(user.uid, this.setlists);
-                    await StorageManager.saveGroups(user.uid, this.groups);
                 } catch (error) {
                     console.error('Error guardando datos:', error);
                     UI.showToast('Error guardando datos');
                 }
             }
 
-            // ===== NOTIFICACIONES =====
+            // ===== GRUPOS =====
+
+            async loadGroups() {
+                const user = this.auth.getUser();
+                if (!user) return;
+
+                try {
+                    this.groups = await StorageManager.loadGroups(user.email);
+                    this.renderGroups();
+                    
+                    // Verificar notificaciones de nuevos setlists
+                    this.checkGroupNotifications();
+                } catch (error) {
+                    console.error('Error cargando grupos:', error);
+                    UI.showToast('Error cargando grupos');
+                }
+            }
+
+            async saveGroup(group) {
+                const result = await StorageManager.saveGroup(group);
+                if (result.success) {
+                    await this.loadGroups();
+                }
+                return result;
+            }
+
+            async deleteGroupFromFirebase(groupId) {
+                const result = await StorageManager.deleteGroup(groupId);
+                if (result.success) {
+                    await this.loadGroups();
+                }
+                return result;
+            }
 
             checkGroupNotifications() {
-                // Notificar sobre setlists nuevos en grupos donde es miembro
+                const userEmail = this.auth.getUser()?.email;
                 this.groups.forEach(group => {
-                    const userEmail = this.auth.getUser()?.email;
-                    if (userEmail && group.members.includes(userEmail)) {
-                        group.setlists.forEach(setlist => {
-                            // Verificar si ya fue notificado (usando localStorage como ejemplo)
-                            const notifKey = `notif_${group.id}_${setlist.id}`;
-                            if (!localStorage.getItem(notifKey)) {
-                                this.notificationManager.addNotification(
-                                    `📋 Nuevo set list "${setlist.name}" en el grupo "${group.name}"`,
-                                    'info',
-                                    { groupId: group.id, setlistId: setlist.id }
-                                );
-                                localStorage.setItem(notifKey, 'true');
-                            }
-                        });
-                    }
+                    group.setlists.forEach(setlist => {
+                        const notifKey = `notif_${group.id}_${setlist.id}`;
+                        if (!localStorage.getItem(notifKey)) {
+                            this.notificationManager.addNotification(
+                                `📋 Nuevo set list "${setlist.name}" en el grupo "${group.name}"`,
+                                'info',
+                                { groupId: group.id, setlistId: setlist.id }
+                            );
+                            localStorage.setItem(notifKey, 'true');
+                        }
+                    });
                 });
             }
-
-            sendGroupNotification(group, setlist) {
-                // Notificar a todos los miembros del grupo
-                group.members.forEach(memberEmail => {
-                    // Solo enviar si no es el creador
-                    const user = this.auth.getUser();
-                    if (memberEmail !== user?.email) {
-                        // Aquí se enviaría la notificación real
-                        // Por ahora solo guardamos en el sistema de notificaciones
-                        this.notificationManager.addNotification(
-                            `📋 Nuevo set list "${setlist.name}" en el grupo "${group.name}"`,
-                            'info',
-                            { groupId: group.id, setlistId: setlist.id }
-                        );
-                    }
-                });
-            }
-
-            // ===== GRUPOS =====
 
             renderGroups() {
                 UI.renderGroups(this.groups);
@@ -1957,11 +1996,24 @@
                 return this.groups.find(g => g.id === this.currentGroupId);
             }
 
-            openGroup(id) {
+            async openGroup(id) {
                 this.currentGroupId = id;
                 this.currentGroupSetlistId = null;
                 this.currentGroupSongIndex = null;
-                this.renderCurrentGroupDetail();
+                
+                // Recargar grupo desde Firebase para obtener datos actualizados
+                const group = await StorageManager.getGroup(id);
+                if (group) {
+                    const index = this.groups.findIndex(g => g.id === id);
+                    if (index !== -1) {
+                        this.groups[index] = group;
+                    } else {
+                        this.groups.push(group);
+                    }
+                    this.renderCurrentGroupDetail();
+                } else {
+                    UI.showToast('Grupo no encontrado');
+                }
             }
 
             openGroupSetlist(id) {
@@ -1994,17 +2046,24 @@
                             UI.showToast('Por favor ingresa un nombre');
                             return;
                         }
-                        const group = new Group(null, data.groupName.trim(), data.groupDescription.trim());
                         const user = this.auth.getUser();
-                        if (user) {
-                            group.createdBy = user.uid;
-                            group.addMember(user.email);
+                        if (!user) {
+                            UI.showToast('Debes iniciar sesión');
+                            return;
                         }
-                        this.groups.push(group);
-                        await this.saveAllData();
-                        this.renderGroups();
-                        UI.closeModal();
-                        UI.showToast(`Grupo "${group.name}" creado`);
+                        
+                        const group = new Group(null, data.groupName.trim(), data.groupDescription.trim());
+                        group.createdBy = user.uid;
+                        group.addMember(user.email);
+                        
+                        const result = await this.saveGroup(group);
+                        if (result.success) {
+                            UI.closeModal();
+                            UI.showToast(`Grupo "${group.name}" creado`);
+                            await this.loadGroups();
+                        } else {
+                            UI.showToast('Error al crear el grupo: ' + result.error);
+                        }
                     },
                     'Crear Grupo'
                 );
@@ -2033,16 +2092,27 @@
                             return;
                         }
                         group.addMember(email);
-                        await this.saveAllData();
-                        this.renderCurrentGroupDetail();
-                        UI.closeModal();
-                        UI.showToast(`Invitación enviada a ${email}`);
+                        const result = await this.saveGroup(group);
+                        if (result.success) {
+                            this.renderCurrentGroupDetail();
+                            UI.closeModal();
+                            UI.showToast(`Invitación enviada a ${email}`);
+                            
+                            // Notificar al usuario invitado (se verá cuando inicie sesión)
+                            this.notificationManager.addNotification(
+                                `📩 Has sido invitado al grupo "${group.name}"`,
+                                'info',
+                                { groupId: group.id }
+                            );
+                        } else {
+                            UI.showToast('Error al invitar: ' + result.error);
+                        }
                     },
                     'Invitar'
                 );
             }
 
-            removeMember(email) {
+            async removeMember(email) {
                 const group = this.getCurrentGroup();
                 if (!group) return;
 
@@ -2050,9 +2120,35 @@
                     `¿Eliminar a "${email}" del grupo?`,
                     async () => {
                         group.removeMember(email);
-                        await this.saveAllData();
-                        this.renderCurrentGroupDetail();
-                        UI.showToast('Miembro eliminado');
+                        const result = await this.saveGroup(group);
+                        if (result.success) {
+                            this.renderCurrentGroupDetail();
+                            UI.showToast('Miembro eliminado');
+                        } else {
+                            UI.showToast('Error al eliminar miembro');
+                        }
+                    }
+                );
+            }
+
+            async leaveGroup(groupId) {
+                const group = this.groups.find(g => g.id === groupId);
+                if (!group) return;
+
+                UI.showConfirm(
+                    `¿Salir del grupo "${group.name}"?`,
+                    async () => {
+                        const userEmail = this.auth.getUser()?.email;
+                        if (userEmail) {
+                            group.removeMember(userEmail);
+                            const result = await this.saveGroup(group);
+                            if (result.success) {
+                                await this.loadGroups();
+                                UI.showToast(`Has salido del grupo "${group.name}"`);
+                            } else {
+                                UI.showToast('Error al salir del grupo');
+                            }
+                        }
                     }
                 );
             }
@@ -2079,14 +2175,26 @@
                         }
                         const setlist = new SetList(null, data.name.trim(), data.key);
                         group.addSetlist(setlist);
-                        await this.saveAllData();
-                        this.renderCurrentGroupDetail();
-                        
-                        // Enviar notificación a los miembros
-                        this.sendGroupNotification(group, setlist);
-                        
-                        UI.closeModal();
-                        UI.showToast(`Set List "${setlist.name}" agregado al grupo`);
+                        const result = await this.saveGroup(group);
+                        if (result.success) {
+                            this.renderCurrentGroupDetail();
+                            UI.closeModal();
+                            UI.showToast(`Set List "${setlist.name}" agregado al grupo`);
+                            
+                            // Notificar a todos los miembros
+                            const userEmail = this.auth.getUser()?.email;
+                            group.members.forEach(memberEmail => {
+                                if (memberEmail !== userEmail) {
+                                    this.notificationManager.addNotification(
+                                        `📋 Nuevo set list "${setlist.name}" en el grupo "${group.name}"`,
+                                        'info',
+                                        { groupId: group.id, setlistId: setlist.id }
+                                    );
+                                }
+                            });
+                        } else {
+                            UI.showToast('Error al crear set list: ' + result.error);
+                        }
                     },
                     'Crear Set List'
                 );
@@ -2116,10 +2224,14 @@
                         }
                         const song = new Song(null, data.title.trim(), data.artist.trim(), data.key, data.lyrics);
                         setlist.addSong(song);
-                        await this.saveAllData();
-                        this.renderCurrentGroupSongs();
-                        UI.closeModal();
-                        UI.showToast('Canción agregada al grupo');
+                        const result = await this.saveGroup(group);
+                        if (result.success) {
+                            this.renderCurrentGroupSongs();
+                            UI.closeModal();
+                            UI.showToast('Canción agregada al grupo');
+                        } else {
+                            UI.showToast('Error al agregar canción');
+                        }
                     },
                     'Agregar'
                 );
@@ -2173,7 +2285,7 @@
                             const publicId = selected.value.replace('pub_', '');
                             const publicSetlist = this.publicSetlists.find(s => s.publicId === publicId);
                             if (publicSetlist) {
-                                setlistToImport = await StorageManager.importPublicSetlist(publicId, this.auth.getUser()?.uid);
+                                setlistToImport = await StorageManager.importPublicSetlist(publicId);
                             }
                         }
 
@@ -2189,16 +2301,20 @@
                         }
 
                         group.addSetlist(setlistToImport);
-                        await this.saveAllData();
-                        this.renderCurrentGroupDetail();
-                        UI.closeModal();
-                        UI.showToast(`"${setlistToImport.name}" importado al grupo`);
+                        const result = await this.saveGroup(group);
+                        if (result.success) {
+                            this.renderCurrentGroupDetail();
+                            UI.closeModal();
+                            UI.showToast(`"${setlistToImport.name}" importado al grupo`);
+                        } else {
+                            UI.showToast('Error al importar: ' + result.error);
+                        }
                     },
                     'Importar'
                 );
             }
 
-            removeGroupSetlist(setlistId) {
+            async removeGroupSetlist(setlistId) {
                 const group = this.getCurrentGroup();
                 if (!group) return;
 
@@ -2209,24 +2325,13 @@
                     `¿Eliminar "${setlist.name}" del grupo?`,
                     async () => {
                         group.removeSetlist(setlistId);
-                        await this.saveAllData();
-                        this.renderCurrentGroupDetail();
-                        UI.showToast('Set list eliminado del grupo');
-                    }
-                );
-            }
-
-            deleteGroup(groupId) {
-                const group = this.groups.find(g => g.id === groupId);
-                if (!group) return;
-
-                UI.showConfirm(
-                    `¿Eliminar el grupo "${group.name}"?`,
-                    async () => {
-                        this.groups = this.groups.filter(g => g.id !== groupId);
-                        await this.saveAllData();
-                        this.renderGroups();
-                        UI.showToast('Grupo eliminado');
+                        const result = await this.saveGroup(group);
+                        if (result.success) {
+                            this.renderCurrentGroupDetail();
+                            UI.showToast('Set list eliminado del grupo');
+                        } else {
+                            UI.showToast('Error al eliminar set list');
+                        }
                     }
                 );
             }
@@ -2548,13 +2653,21 @@
                         }
 
                         if (data.groups) {
-                            const importedGroups = data.groups.map(item => Group.fromJSON(item));
+                            // Solo importar grupos si el usuario es miembro
+                            const userEmail = this.auth.getUser()?.email;
+                            const importedGroups = data.groups
+                                .map(item => Group.fromJSON(item))
+                                .filter(g => g.members.includes(userEmail));
                             this.groups = [...this.groups, ...importedGroups];
+                            // Guardar grupos en Firebase
+                            for (const group of importedGroups) {
+                                await this.saveGroup(group);
+                            }
                         }
 
                         await this.saveAllData();
                         this.renderSetlists();
-                        this.renderGroups();
+                        this.loadGroups();
                         UI.showToast('Datos importados exitosamente');
                     } catch (error) {
                         UI.showToast('Error al importar');
@@ -2744,7 +2857,7 @@
                 UI.showConfirm(
                     '¿Importar este set list a tu biblioteca?',
                     async () => {
-                        const setlist = await StorageManager.importPublicSetlist(publicId, user.uid);
+                        const setlist = await StorageManager.importPublicSetlist(publicId);
                         if (setlist) {
                             this.setlists.push(setlist);
                             await this.saveAllData();
