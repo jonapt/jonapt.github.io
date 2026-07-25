@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1A237E">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Setlify</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Firebase SDK (CDN) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <!-- Pantalla de Login -->
@@ -72,7 +77,6 @@
 
     <!-- App Content -->
     <div id="appContent" style="display:none;">
-        <!-- App Bar -->
         <header class="app-bar">
             <div class="app-bar-content">
                 <h1>🎵 Setlify</h1>
@@ -95,9 +99,7 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="container">
-            <!-- Vista de SetLists -->
             <section id="setlists-view" class="view active">
                 <div class="view-header">
                     <h2>📋 Mis Set Lists</h2>
@@ -109,7 +111,6 @@
                 <div id="setlists-list" class="cards-grid"></div>
             </section>
 
-            <!-- Vista de Canciones -->
             <section id="songs-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToSetlists" class="back-btn">← Volver</button>
@@ -119,7 +120,6 @@
                 <div id="songs-list" class="songs-list"></div>
             </section>
 
-            <!-- Vista de Letras -->
             <section id="lyrics-view" class="view">
                 <div class="view-header">
                     <button id="btnBackToSongs" class="back-btn">← Volver</button>
@@ -129,7 +129,6 @@
             </section>
         </main>
 
-        <!-- Modal -->
         <div id="modal" class="modal">
             <div class="modal-content">
                 <div id="modal-body"></div>
@@ -137,22 +136,816 @@
         </div>
     </div>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
-                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js",
-                "firebase/analytics": "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js"
+    <!-- Scripts - TODOS LOS SCRIPTS EN UN SOLO ARCHIVO -->
+    <script>
+        // ============================================
+        // CONFIGURACIÓN DE FIREBASE
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHMdRKe5EUoiw9f7rTXZUpyW2Y02zPL4M",
+            authDomain: "setlify-bff8f.firebaseapp.com",
+            projectId: "setlify-bff8f",
+            storageBucket: "setlify-bff8f.firebasestorage.app",
+            messagingSenderId: "185457141481",
+            appId: "1:185457141481:web:e483220a7d3e22f1653278",
+            measurementId: "G-PF7L5R4L35"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ============================================
+        // MODELOS
+        // ============================================
+        class SetList {
+            constructor(id, name, key) {
+                this.id = id || crypto.randomUUID();
+                this.name = name;
+                this.key = key;
+                this.songs = [];
+                this.createdAt = new Date().toISOString();
+            }
+
+            addSong(song) {
+                song.key = this.key;
+                this.songs.push(song);
+                return this;
+            }
+
+            getSongCount() {
+                return this.songs.length;
+            }
+
+            toJSON() {
+                return {
+                    id: this.id,
+                    name: this.name,
+                    key: this.key,
+                    songs: this.songs.map(s => s.toJSON()),
+                    createdAt: this.createdAt
+                };
+            }
+
+            static fromJSON(data) {
+                const setlist = new SetList(data.id, data.name, data.key);
+                setlist.createdAt = data.createdAt || new Date().toISOString();
+                if (data.songs) {
+                    setlist.songs = data.songs.map(s => Song.fromJSON(s));
+                }
+                return setlist;
             }
         }
+
+        class Song {
+            constructor(id, title, artist, key, lyrics) {
+                this.id = id || crypto.randomUUID();
+                this.title = title;
+                this.artist = artist;
+                this.key = key;
+                this.lyrics = lyrics;
+                this.createdAt = new Date().toISOString();
+            }
+
+            toJSON() {
+                return {
+                    id: this.id,
+                    title: this.title,
+                    artist: this.artist,
+                    key: this.key,
+                    lyrics: this.lyrics,
+                    createdAt: this.createdAt
+                };
+            }
+
+            static fromJSON(data) {
+                const song = new Song(data.id, data.title, data.artist, data.key, data.lyrics);
+                song.createdAt = data.createdAt || new Date().toISOString();
+                return song;
+            }
+        }
+
+        // ============================================
+        // STORAGE (Firebase)
+        // ============================================
+        class StorageManager {
+            static async saveUserSetlists(userId, setlists) {
+                try {
+                    await db.collection('setlists').doc(userId).set({
+                        setlists: setlists.map(s => s.toJSON()),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    return { success: true };
+                } catch (error) {
+                    console.error('Error guardando:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            static async loadUserSetlists(userId) {
+                try {
+                    const doc = await db.collection('setlists').doc(userId).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data.setlists) {
+                            return data.setlists.map(item => SetList.fromJSON(item));
+                        }
+                    }
+                    return [];
+                } catch (error) {
+                    console.error('Error cargando:', error);
+                    return [];
+                }
+            }
+        }
+
+        // ============================================
+        // UI
+        // ============================================
+        class UI {
+            static showView(viewId) {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById(viewId).classList.add('active');
+            }
+
+            static renderSetlists(setlists) {
+                const container = document.getElementById('setlists-list');
+                if (!container) return;
+
+                if (setlists.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p style="color: var(--text-secondary); text-align: center; padding: 60px 0;">
+                                🎵 No hay set lists creados.<br>
+                                ¡Crea tu primer set list!
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = setlists.map(setlist => `
+                    <div class="card" data-id="${setlist.id}">
+                        <h3>${UI.escapeHtml(setlist.name)}</h3>
+                        <span class="key-badge">🎼 ${setlist.key}</span>
+                        <div class="song-count">${setlist.getSongCount()} canciones</div>
+                    </div>
+                `).join('');
+            }
+
+            static renderSongs(setlist) {
+                const container = document.getElementById('songs-list');
+                if (!container) return;
+
+                document.getElementById('setlist-title').textContent = setlist.name;
+
+                if (setlist.songs.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p style="color: var(--text-secondary); text-align: center; padding: 40px 0;">
+                                📝 No hay canciones en este set list.<br>
+                                ¡Agrega tu primera canción!
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = setlist.songs.map((song, index) => `
+                    <div class="song-item" data-index="${index}">
+                        <div class="song-info">
+                            <div class="song-title">${UI.escapeHtml(song.title)}</div>
+                            <div class="song-artist">${UI.escapeHtml(song.artist || 'Artista desconocido')}</div>
+                        </div>
+                        <span class="song-key">🎼 ${song.key}</span>
+                    </div>
+                `).join('');
+            }
+
+            static renderLyrics(song) {
+                document.getElementById('song-title').textContent = song.title;
+                const container = document.getElementById('lyrics-content');
+                if (!container) return;
+                container.textContent = song.lyrics || '📝 No hay letra disponible.';
+            }
+
+            static showModal(title, fields, onSubmit, submitLabel = 'Guardar') {
+                const modal = document.getElementById('modal');
+                const body = document.getElementById('modal-body');
+                if (!modal || !body) return;
+
+                let html = `<h3>${title}</h3>`;
+                fields.forEach(field => {
+                    html += `
+                        <div class="form-group">
+                            <label>${field.label}</label>
+                            ${field.type === 'textarea' 
+                                ? `<textarea id="${field.id}" ${field.required ? 'required' : ''}>${field.value || ''}</textarea>`
+                                : field.type === 'select'
+                                ? `<select id="${field.id}" ${field.required ? 'required' : ''}>
+                                    ${field.options.map(opt => 
+                                        `<option value="${opt}" ${opt === field.value ? 'selected' : ''}>${opt}</option>`
+                                    ).join('')}
+                                </select>`
+                                : `<input type="${field.type || 'text'}" id="${field.id}" value="${field.value || ''}" ${field.required ? 'required' : ''}>`
+                            }
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="UI.closeModal()">Cancelar</button>
+                        <button class="btn-primary" id="modalSubmit">${submitLabel}</button>
+                    </div>
+                `;
+
+                body.innerHTML = html;
+                modal.classList.add('active');
+
+                document.getElementById('modalSubmit').addEventListener('click', () => {
+                    const formData = {};
+                    fields.forEach(field => {
+                        const element = document.getElementById(field.id);
+                        if (element) {
+                            formData[field.id] = element.value;
+                        }
+                    });
+                    onSubmit(formData);
+                });
+            }
+
+            static closeModal() {
+                document.getElementById('modal').classList.remove('active');
+            }
+
+            static showConfirm(message, onConfirm) {
+                const modal = document.getElementById('modal');
+                const body = document.getElementById('modal-body');
+                if (!modal || !body) return;
+
+                body.innerHTML = `
+                    <h3>Confirmar</h3>
+                    <p style="margin: 16px 0; color: var(--text-secondary);">${message}</p>
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="UI.closeModal()">Cancelar</button>
+                        <button class="btn-primary" id="confirmBtn">Confirmar</button>
+                    </div>
+                `;
+
+                modal.classList.add('active');
+                document.getElementById('confirmBtn').addEventListener('click', () => {
+                    UI.closeModal();
+                    onConfirm();
+                });
+            }
+
+            static escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            static showToast(message, duration = 3000) {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 24px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #1A1A2E;
+                    color: white;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    z-index: 3000;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    animation: fadeIn 0.3s ease;
+                    max-width: 90%;
+                    text-align: center;
+                `;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.3s';
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
+        }
+
+        // ============================================
+        // AUTH MANAGER
+        // ============================================
+        class AuthManager {
+            constructor() {
+                this.currentUser = null;
+                this.onAuthChange = null;
+                this.init();
+            }
+
+            init() {
+                auth.onAuthStateChanged((user) => {
+                    this.currentUser = user;
+                    if (this.onAuthChange) {
+                        this.onAuthChange(user);
+                    }
+                    if (user) {
+                        console.log('✅ Usuario autenticado:', user.email);
+                    } else {
+                        console.log('❌ Usuario no autenticado');
+                    }
+                });
+            }
+
+            async register(email, password, displayName) {
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    
+                    await user.updateProfile({ displayName: displayName });
+                    
+                    await db.collection('users').doc(user.uid).set({
+                        email: email,
+                        displayName: displayName,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    return { success: true, user: user };
+                } catch (error) {
+                    console.error('Error en registro:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            async login(email, password) {
+                try {
+                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                    return { success: true, user: userCredential.user };
+                } catch (error) {
+                    console.error('Error en login:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            async logout() {
+                try {
+                    await auth.signOut();
+                    return { success: true };
+                } catch (error) {
+                    console.error('Error en logout:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            async resetPassword(email) {
+                try {
+                    await auth.sendPasswordResetEmail(email);
+                    return { success: true };
+                } catch (error) {
+                    console.error('Error en reset password:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            getUser() {
+                return this.currentUser;
+            }
+
+            isAuthenticated() {
+                return this.currentUser !== null;
+            }
+
+            onAuthStateChanged(callback) {
+                this.onAuthChange = callback;
+            }
+        }
+
+        // ============================================
+        // APP PRINCIPAL
+        // ============================================
+        class SetlifyApp {
+            constructor() {
+                this.auth = new AuthManager();
+                this.setlists = [];
+                this.currentSetlistId = null;
+                this.currentSongIndex = null;
+                
+                this.auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        this.loadUserData();
+                        this.showAppContent();
+                        UI.showToast(`👋 Bienvenido, ${user.displayName || user.email}`);
+                    } else {
+                        this.showLoginScreen();
+                    }
+                });
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.showLoginScreen();
+            }
+
+            setupEventListeners() {
+                document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleLogin();
+                });
+
+                document.getElementById('registerForm')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleRegister();
+                });
+
+                document.getElementById('logoutBtn')?.addEventListener('click', () => {
+                    this.handleLogout();
+                });
+
+                document.getElementById('showRegister')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showRegisterScreen();
+                });
+
+                document.getElementById('showLogin')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showLoginScreenOnly();
+                });
+
+                document.getElementById('showForgotPassword')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showResetPasswordScreen();
+                });
+
+                document.getElementById('backToLogin')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showLoginScreenOnly();
+                });
+
+                document.getElementById('resetPasswordForm')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleResetPassword();
+                });
+
+                document.getElementById('btnAddSetlist')?.addEventListener('click', () => {
+                    this.showAddSetlistModal();
+                });
+
+                document.getElementById('btnAddSong')?.addEventListener('click', () => {
+                    this.showAddSongModal();
+                });
+
+                document.getElementById('btnBackToSetlists')?.addEventListener('click', () => {
+                    UI.showView('setlists-view');
+                    this.renderSetlists();
+                });
+
+                document.getElementById('btnBackToSongs')?.addEventListener('click', () => {
+                    UI.showView('songs-view');
+                    this.renderSongs();
+                });
+
+                document.getElementById('setlists-list')?.addEventListener('click', (e) => {
+                    const card = e.target.closest('.card');
+                    if (card) {
+                        this.openSetlist(card.dataset.id);
+                    }
+                });
+
+                document.getElementById('songs-list')?.addEventListener('click', (e) => {
+                    const item = e.target.closest('.song-item');
+                    if (item) {
+                        this.openSong(parseInt(item.dataset.index));
+                    }
+                });
+
+                document.getElementById('btnExport')?.addEventListener('click', () => {
+                    this.exportData();
+                });
+
+                document.getElementById('btnImport')?.addEventListener('click', () => {
+                    document.getElementById('fileInput').click();
+                });
+
+                document.getElementById('fileInput')?.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.importData(e.target.files[0]);
+                    }
+                });
+
+                document.getElementById('modal')?.addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) {
+                        UI.closeModal();
+                    }
+                });
+            }
+
+            // ===== AUTENTICACIÓN =====
+            
+            async handleLogin() {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+                
+                if (!email || !password) {
+                    UI.showToast('⚠️ Por favor ingresa email y contraseña');
+                    return;
+                }
+
+                UI.showToast('🔄 Iniciando sesión...');
+                const result = await this.auth.login(email, password);
+                if (!result.success) {
+                    UI.showToast('❌ Error: ' + result.error);
+                }
+            }
+
+            async handleRegister() {
+                const name = document.getElementById('registerName').value.trim();
+                const email = document.getElementById('registerEmail').value.trim();
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+                console.log('📝 Registro intentado:', { name, email, passwordLength: password?.length });
+
+                if (!name || !email || !password) {
+                    UI.showToast('⚠️ Todos los campos son requeridos');
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    UI.showToast('⚠️ Las contraseñas no coinciden');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    UI.showToast('⚠️ La contraseña debe tener al menos 6 caracteres');
+                    return;
+                }
+
+                UI.showToast('🔄 Registrando usuario...');
+                console.log('✅ Intentando registrar en Firebase...');
+                
+                const result = await this.auth.register(email, password, name);
+                console.log('📊 Resultado del registro:', result);
+                
+                if (!result.success) {
+                    UI.showToast('❌ Error: ' + result.error);
+                    console.error('❌ Error detallado:', result.error);
+                } else {
+                    UI.showToast('✅ ¡Registro exitoso!');
+                    console.log('✅ Registro exitoso');
+                }
+            }
+
+            async handleLogout() {
+                UI.showConfirm('¿Estás seguro de que quieres cerrar sesión?', async () => {
+                    await this.auth.logout();
+                    this.setlists = [];
+                    this.showLoginScreen();
+                    UI.showToast('👋 Sesión cerrada');
+                });
+            }
+
+            async handleResetPassword() {
+                const email = document.getElementById('resetEmail').value.trim();
+                if (!email) {
+                    UI.showToast('⚠️ Por favor ingresa tu email');
+                    return;
+                }
+
+                UI.showToast('🔄 Enviando enlace...');
+                const result = await this.auth.resetPassword(email);
+                if (result.success) {
+                    UI.showToast('✅ Revisa tu correo');
+                    this.showLoginScreenOnly();
+                } else {
+                    UI.showToast('❌ Error: ' + result.error);
+                }
+            }
+
+            // ===== VISTAS =====
+
+            showLoginScreen() {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('appContent').style.display = 'none';
+            }
+
+            showAppContent() {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContent').style.display = 'block';
+                const user = this.auth.getUser();
+                if (user) {
+                    document.getElementById('userEmail').textContent = user.email;
+                }
+            }
+
+            showRegisterScreen() {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+                document.getElementById('resetPasswordForm').style.display = 'none';
+            }
+
+            showLoginScreenOnly() {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('resetPasswordForm').style.display = 'none';
+            }
+
+            showResetPasswordScreen() {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('resetPasswordForm').style.display = 'block';
+            }
+
+            // ===== DATOS =====
+
+            async loadUserData() {
+                const user = this.auth.getUser();
+                if (!user) return;
+
+                try {
+                    UI.showToast('📥 Cargando datos...');
+                    this.setlists = await StorageManager.loadUserSetlists(user.uid);
+                    this.renderSetlists();
+                } catch (error) {
+                    console.error('Error cargando datos:', error);
+                    UI.showToast('❌ Error cargando datos');
+                }
+            }
+
+            async saveUserData() {
+                const user = this.auth.getUser();
+                if (!user) return;
+
+                try {
+                    await StorageManager.saveUserSetlists(user.uid, this.setlists);
+                } catch (error) {
+                    console.error('Error guardando:', error);
+                    UI.showToast('❌ Error guardando datos');
+                }
+            }
+
+            // ===== SETLISTS =====
+
+            renderSetlists() {
+                UI.renderSetlists(this.setlists);
+            }
+
+            renderSongs() {
+                const setlist = this.getCurrentSetlist();
+                if (setlist) {
+                    UI.renderSongs(setlist);
+                }
+            }
+
+            getCurrentSetlist() {
+                return this.setlists.find(s => s.id === this.currentSetlistId);
+            }
+
+            openSetlist(id) {
+                this.currentSetlistId = id;
+                UI.showView('songs-view');
+                this.renderSongs();
+            }
+
+            openSong(index) {
+                const setlist = this.getCurrentSetlist();
+                if (!setlist || !setlist.songs[index]) return;
+                this.currentSongIndex = index;
+                UI.renderLyrics(setlist.songs[index]);
+                UI.showView('lyrics-view');
+            }
+
+            showAddSetlistModal() {
+                const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+                
+                UI.showModal(
+                    '🎵 Nuevo Set List',
+                    [
+                        { id: 'name', label: 'Nombre del Set List', type: 'text', required: true },
+                        { id: 'key', label: 'Tonalidad', type: 'select', options: keys, value: 'C', required: true }
+                    ],
+                    async (data) => {
+                        if (!data.name.trim()) {
+                            UI.showToast('⚠️ Por favor ingresa un nombre');
+                            return;
+                        }
+                        const setlist = new SetList(null, data.name.trim(), data.key);
+                        this.setlists.push(setlist);
+                        await this.saveUserData();
+                        this.renderSetlists();
+                        UI.closeModal();
+                        UI.showToast('✅ Set List creado');
+                    },
+                    'Crear'
+                );
+            }
+
+            showAddSongModal() {
+                const setlist = this.getCurrentSetlist();
+                if (!setlist) {
+                    UI.showToast('⚠️ Primero selecciona un Set List');
+                    return;
+                }
+
+                UI.showModal(
+                    '🎶 Agregar Canción',
+                    [
+                        { id: 'title', label: 'Título', type: 'text', required: true },
+                        { id: 'artist', label: 'Artista', type: 'text' },
+                        { id: 'key', label: 'Tonalidad', type: 'text', value: setlist.key, required: true },
+                        { id: 'lyrics', label: 'Letra', type: 'textarea' }
+                    ],
+                    async (data) => {
+                        if (!data.title.trim()) {
+                            UI.showToast('⚠️ Por favor ingresa un título');
+                            return;
+                        }
+                        const song = new Song(null, data.title.trim(), data.artist.trim(), data.key, data.lyrics);
+                        setlist.addSong(song);
+                        await this.saveUserData();
+                        this.renderSongs();
+                        UI.closeModal();
+                        UI.showToast('✅ Canción agregada');
+                    },
+                    'Agregar'
+                );
+            }
+
+            // ===== EXPORTAR/IMPORTAR =====
+
+            exportData() {
+                if (this.setlists.length === 0) {
+                    UI.showToast('⚠️ No hay datos para exportar');
+                    return;
+                }
+
+                const json = JSON.stringify(this.setlists.map(s => s.toJSON()), null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `setlify-${new Date().toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                UI.showToast('📤 Datos exportados');
+            }
+
+            importData(file) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (!Array.isArray(data)) {
+                            UI.showToast('❌ Formato inválido');
+                            return;
+                        }
+
+                        UI.showConfirm(
+                            `Se importarán ${data.length} set lists. ¿Agregar?`,
+                            async () => {
+                                const imported = data.map(item => SetList.fromJSON(item));
+                                this.setlists = [...this.setlists, ...imported];
+                                await this.saveUserData();
+                                this.renderSetlists();
+                                UI.showToast(`✅ ${imported.length} set lists importados`);
+                            }
+                        );
+                    } catch (error) {
+                        UI.showToast('❌ Error al importar');
+                        console.error(error);
+                    }
+                };
+                reader.readAsText(file);
+                document.getElementById('fileInput').value = '';
+            }
+
+            async saveAndRender() {
+                await this.saveUserData();
+                const view = document.querySelector('.view.active');
+                if (view?.id === 'setlists-view') {
+                    this.renderSetlists();
+                } else if (view?.id === 'songs-view') {
+                    this.renderSongs();
+                }
+            }
+        }
+
+        // ============================================
+        // INICIALIZAR APP
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new SetlifyApp();
+        });
     </script>
-    
-    <script type="module" src="js/firebase-config.js"></script>
-    <script type="module" src="js/models.js"></script>
-    <script type="module" src="js/storage.js"></script>
-    <script type="module" src="js/auth.js"></script>
-    <script type="module" src="js/ui.js"></script>
-    <script type="module" src="js/app.js"></script>
 </body>
 </html>
