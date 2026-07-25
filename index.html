@@ -683,10 +683,9 @@
         }
 
         // ============================================
-        // STORAGE (Firebase - Grupos Compartidos)
+        // STORAGE (Firebase)
         // ============================================
         class StorageManager {
-            // SETLISTS
             static async saveUserSetlists(userId, setlists) {
                 try {
                     await db.collection('setlists').doc(userId).set({
@@ -715,8 +714,6 @@
                     return [];
                 }
             }
-
-            // ===== GRUPOS COMPARTIDOS (Firestore Global) =====
 
             static async saveGroup(group) {
                 try {
@@ -756,21 +753,6 @@
                 }
             }
 
-            static async loadAllGroups() {
-                try {
-                    const snapshot = await db.collection('groups').get();
-                    const groups = [];
-                    snapshot.forEach(doc => {
-                        const group = Group.fromJSON(doc.data());
-                        groups.push(group);
-                    });
-                    return groups;
-                } catch (error) {
-                    console.error('Error cargando todos los grupos:', error);
-                    return [];
-                }
-            }
-
             static async getGroup(groupId) {
                 try {
                     const doc = await db.collection('groups').doc(groupId).get();
@@ -783,8 +765,6 @@
                     return null;
                 }
             }
-
-            // ===== PUBLIC SETLISTS =====
 
             static async publishSetlist(userId, setlist, userName) {
                 try {
@@ -903,18 +883,19 @@
 
                 let html = `<h3>${title}</h3>`;
                 fields.forEach(field => {
+                    const value = field.value !== undefined ? field.value : '';
                     html += `
                         <div class="form-group">
                             <label>${field.label}</label>
                             ${field.type === 'textarea' 
-                                ? `<textarea id="${field.id}" ${field.required ? 'required' : ''} ${field.rows ? `rows="${field.rows}"` : ''}>${field.value || ''}</textarea>`
+                                ? `<textarea id="${field.id}" ${field.required ? 'required' : ''} ${field.rows ? `rows="${field.rows}"` : ''}>${value}</textarea>`
                                 : field.type === 'select'
                                 ? `<select id="${field.id}" ${field.required ? 'required' : ''}>
                                     ${field.options.map(opt => 
                                         `<option value="${opt}" ${opt === field.value ? 'selected' : ''}>${opt}</option>`
                                     ).join('')}
                                 </select>`
-                                : `<input type="${field.type || 'text'}" id="${field.id}" value="${field.value || ''}" ${field.required ? 'required' : ''} ${field.placeholder ? `placeholder="${field.placeholder}"` : ''}>`
+                                : `<input type="${field.type || 'text'}" id="${field.id}" value="${value}" ${field.required ? 'required' : ''} ${field.placeholder ? `placeholder="${field.placeholder}"` : ''}>`
                             }
                         </div>
                     `;
@@ -1929,7 +1910,6 @@
                     this.groups = await StorageManager.loadGroups(user.email);
                     this.renderGroups();
                     
-                    // Verificar notificaciones de nuevos setlists
                     this.checkGroupNotifications();
                 } catch (error) {
                     console.error('Error cargando grupos:', error);
@@ -2001,7 +1981,6 @@
                 this.currentGroupSetlistId = null;
                 this.currentGroupSongIndex = null;
                 
-                // Recargar grupo desde Firebase para obtener datos actualizados
                 const group = await StorageManager.getGroup(id);
                 if (group) {
                     const index = this.groups.findIndex(g => g.id === id);
@@ -2038,21 +2017,37 @@
                 UI.showModal(
                     'Nuevo Grupo de Alabanza',
                     [
-                        { id: 'groupName', label: 'Nombre del Grupo', type: 'text', required: true },
-                        { id: 'groupDescription', label: 'Descripción', type: 'textarea', rows: 3 }
+                        { 
+                            id: 'groupName', 
+                            label: 'Nombre del Grupo', 
+                            type: 'text', 
+                            required: true,
+                            value: ''
+                        },
+                        { 
+                            id: 'groupDescription', 
+                            label: 'Descripción', 
+                            type: 'textarea', 
+                            rows: 3,
+                            value: ''
+                        }
                     ],
                     async (data) => {
-                        if (!data.groupName.trim()) {
+                        const name = data.groupName?.trim() || '';
+                        const description = data.groupDescription?.trim() || '';
+                        
+                        if (!name) {
                             UI.showToast('Por favor ingresa un nombre');
                             return;
                         }
+                        
                         const user = this.auth.getUser();
                         if (!user) {
                             UI.showToast('Debes iniciar sesión');
                             return;
                         }
                         
-                        const group = new Group(null, data.groupName.trim(), data.groupDescription.trim());
+                        const group = new Group(null, name, description);
                         group.createdBy = user.uid;
                         group.addMember(user.email);
                         
@@ -2079,10 +2074,17 @@
                 UI.showModal(
                     'Invitar Miembro',
                     [
-                        { id: 'memberEmail', label: 'Correo electrónico', type: 'email', placeholder: 'ejemplo@dominio.com', required: true }
+                        { 
+                            id: 'memberEmail', 
+                            label: 'Correo electrónico', 
+                            type: 'email', 
+                            placeholder: 'ejemplo@dominio.com', 
+                            required: true,
+                            value: ''
+                        }
                     ],
                     async (data) => {
-                        const email = data.memberEmail.trim();
+                        const email = data.memberEmail?.trim() || '';
                         if (!email) {
                             UI.showToast('Por favor ingresa un email');
                             return;
@@ -2098,7 +2100,6 @@
                             UI.closeModal();
                             UI.showToast(`Invitación enviada a ${email}`);
                             
-                            // Notificar al usuario invitado (se verá cuando inicie sesión)
                             this.notificationManager.addNotification(
                                 `📩 Has sido invitado al grupo "${group.name}"`,
                                 'info',
@@ -2165,15 +2166,32 @@
                 UI.showModal(
                     'Nuevo Set List en Grupo',
                     [
-                        { id: 'name', label: 'Nombre del Set List', type: 'text', required: true },
-                        { id: 'key', label: 'Tonalidad', type: 'select', options: keys, value: 'C', required: true }
+                        { 
+                            id: 'name', 
+                            label: 'Nombre del Set List', 
+                            type: 'text', 
+                            required: true,
+                            value: ''
+                        },
+                        { 
+                            id: 'key', 
+                            label: 'Tonalidad', 
+                            type: 'select', 
+                            options: keys, 
+                            value: 'C', 
+                            required: true 
+                        }
                     ],
                     async (data) => {
-                        if (!data.name.trim()) {
+                        const name = data.name?.trim() || '';
+                        const key = data.key || 'C';
+                        
+                        if (!name) {
                             UI.showToast('Por favor ingresa un nombre');
                             return;
                         }
-                        const setlist = new SetList(null, data.name.trim(), data.key);
+                        
+                        const setlist = new SetList(null, name, key);
                         group.addSetlist(setlist);
                         const result = await this.saveGroup(group);
                         if (result.success) {
@@ -2181,7 +2199,6 @@
                             UI.closeModal();
                             UI.showToast(`Set List "${setlist.name}" agregado al grupo`);
                             
-                            // Notificar a todos los miembros
                             const userEmail = this.auth.getUser()?.email;
                             group.members.forEach(memberEmail => {
                                 if (memberEmail !== userEmail) {
@@ -2212,17 +2229,45 @@
                 UI.showModal(
                     'Agregar Canción al Grupo',
                     [
-                        { id: 'title', label: 'Título', type: 'text', required: true },
-                        { id: 'artist', label: 'Artista', type: 'text' },
-                        { id: 'key', label: 'Tonalidad', type: 'text', value: setlist.key, required: true },
-                        { id: 'lyrics', label: 'Letra', type: 'textarea' }
+                        { 
+                            id: 'title', 
+                            label: 'Título', 
+                            type: 'text', 
+                            required: true,
+                            value: ''
+                        },
+                        { 
+                            id: 'artist', 
+                            label: 'Artista', 
+                            type: 'text',
+                            value: ''
+                        },
+                        { 
+                            id: 'key', 
+                            label: 'Tonalidad', 
+                            type: 'text', 
+                            value: setlist.key, 
+                            required: true 
+                        },
+                        { 
+                            id: 'lyrics', 
+                            label: 'Letra', 
+                            type: 'textarea',
+                            value: ''
+                        }
                     ],
                     async (data) => {
-                        if (!data.title.trim()) {
+                        const title = data.title?.trim() || '';
+                        const artist = data.artist?.trim() || '';
+                        const key = data.key || setlist.key;
+                        const lyrics = data.lyrics || '';
+                        
+                        if (!title) {
                             UI.showToast('Por favor ingresa un título');
                             return;
                         }
-                        const song = new Song(null, data.title.trim(), data.artist.trim(), data.key, data.lyrics);
+                        
+                        const song = new Song(null, title, artist, key, lyrics);
                         setlist.addSong(song);
                         const result = await this.saveGroup(group);
                         if (result.success) {
@@ -2464,18 +2509,34 @@
                 UI.showModal(
                     'Editar Set List',
                     [
-                        { id: 'editName', label: 'Nombre', type: 'text', value: setlist.name, required: true },
-                        { id: 'editKey', label: 'Tonalidad', type: 'select', options: keys, value: setlist.key, required: true }
+                        { 
+                            id: 'editName', 
+                            label: 'Nombre', 
+                            type: 'text', 
+                            value: setlist.name, 
+                            required: true 
+                        },
+                        { 
+                            id: 'editKey', 
+                            label: 'Tonalidad', 
+                            type: 'select', 
+                            options: keys, 
+                            value: setlist.key, 
+                            required: true 
+                        }
                     ],
                     async (data) => {
-                        if (!data.editName.trim()) {
+                        const name = data.editName?.trim() || '';
+                        const key = data.editKey || setlist.key;
+                        
+                        if (!name) {
                             UI.showToast('Por favor ingresa un nombre');
                             return;
                         }
 
                         const oldName = setlist.name;
-                        setlist.name = data.editName.trim();
-                        setlist.key = data.editKey;
+                        setlist.name = name;
+                        setlist.key = key;
 
                         setlist.songs.forEach(song => {
                             song.key = setlist.key;
@@ -2513,22 +2574,49 @@
                 UI.showModal(
                     'Editar Canción',
                     [
-                        { id: 'editTitle', label: 'Título', type: 'text', value: song.title, required: true },
-                        { id: 'editArtist', label: 'Artista', type: 'text', value: song.artist || '' },
-                        { id: 'editKey', label: 'Tonalidad', type: 'text', value: song.key, required: true },
-                        { id: 'editLyrics', label: 'Letra', type: 'textarea', value: song.lyrics || '' }
+                        { 
+                            id: 'editTitle', 
+                            label: 'Título', 
+                            type: 'text', 
+                            value: song.title, 
+                            required: true 
+                        },
+                        { 
+                            id: 'editArtist', 
+                            label: 'Artista', 
+                            type: 'text', 
+                            value: song.artist || '' 
+                        },
+                        { 
+                            id: 'editKey', 
+                            label: 'Tonalidad', 
+                            type: 'text', 
+                            value: song.key, 
+                            required: true 
+                        },
+                        { 
+                            id: 'editLyrics', 
+                            label: 'Letra', 
+                            type: 'textarea', 
+                            value: song.lyrics || '' 
+                        }
                     ],
                     async (data) => {
-                        if (!data.editTitle.trim()) {
+                        const title = data.editTitle?.trim() || '';
+                        const artist = data.editArtist?.trim() || '';
+                        const key = data.editKey || song.key;
+                        const lyrics = data.editLyrics || '';
+                        
+                        if (!title) {
                             UI.showToast('Por favor ingresa un título');
                             return;
                         }
 
                         const oldTitle = song.title;
-                        song.title = data.editTitle.trim();
-                        song.artist = data.editArtist.trim();
-                        song.key = data.editKey.trim();
-                        song.lyrics = data.editLyrics;
+                        song.title = title;
+                        song.artist = artist;
+                        song.key = key;
+                        song.lyrics = lyrics;
 
                         if (this.currentSongIndex === index) {
                             UI.renderLyrics(song);
@@ -2653,13 +2741,11 @@
                         }
 
                         if (data.groups) {
-                            // Solo importar grupos si el usuario es miembro
                             const userEmail = this.auth.getUser()?.email;
                             const importedGroups = data.groups
                                 .map(item => Group.fromJSON(item))
                                 .filter(g => g.members.includes(userEmail));
                             this.groups = [...this.groups, ...importedGroups];
-                            // Guardar grupos en Firebase
                             for (const group of importedGroups) {
                                 await this.saveGroup(group);
                             }
@@ -2878,15 +2964,32 @@
                 UI.showModal(
                     'Nuevo Set List',
                     [
-                        { id: 'name', label: 'Nombre del Set List', type: 'text', required: true },
-                        { id: 'key', label: 'Tonalidad', type: 'select', options: keys, value: 'C', required: true }
+                        { 
+                            id: 'name', 
+                            label: 'Nombre del Set List', 
+                            type: 'text', 
+                            required: true,
+                            value: ''
+                        },
+                        { 
+                            id: 'key', 
+                            label: 'Tonalidad', 
+                            type: 'select', 
+                            options: keys, 
+                            value: 'C', 
+                            required: true 
+                        }
                     ],
                     async (data) => {
-                        if (!data.name.trim()) {
+                        const name = data.name?.trim() || '';
+                        const key = data.key || 'C';
+                        
+                        if (!name) {
                             UI.showToast('Por favor ingresa un nombre');
                             return;
                         }
-                        const setlist = new SetList(null, data.name.trim(), data.key);
+                        
+                        const setlist = new SetList(null, name, key);
                         this.setlists.push(setlist);
                         await this.saveAllData();
                         this.renderSetlists();
@@ -2907,17 +3010,45 @@
                 UI.showModal(
                     'Agregar Canción',
                     [
-                        { id: 'title', label: 'Título', type: 'text', required: true },
-                        { id: 'artist', label: 'Artista', type: 'text' },
-                        { id: 'key', label: 'Tonalidad', type: 'text', value: setlist.key, required: true },
-                        { id: 'lyrics', label: 'Letra', type: 'textarea' }
+                        { 
+                            id: 'title', 
+                            label: 'Título', 
+                            type: 'text', 
+                            required: true,
+                            value: ''
+                        },
+                        { 
+                            id: 'artist', 
+                            label: 'Artista', 
+                            type: 'text',
+                            value: ''
+                        },
+                        { 
+                            id: 'key', 
+                            label: 'Tonalidad', 
+                            type: 'text', 
+                            value: setlist.key, 
+                            required: true 
+                        },
+                        { 
+                            id: 'lyrics', 
+                            label: 'Letra', 
+                            type: 'textarea',
+                            value: ''
+                        }
                     ],
                     async (data) => {
-                        if (!data.title.trim()) {
+                        const title = data.title?.trim() || '';
+                        const artist = data.artist?.trim() || '';
+                        const key = data.key || setlist.key;
+                        const lyrics = data.lyrics || '';
+                        
+                        if (!title) {
                             UI.showToast('Por favor ingresa un título');
                             return;
                         }
-                        const song = new Song(null, data.title.trim(), data.artist.trim(), data.key, data.lyrics);
+                        
+                        const song = new Song(null, title, artist, key, lyrics);
                         setlist.addSong(song);
                         await this.saveAllData();
                         this.renderSongs();
