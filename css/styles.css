@@ -1134,3 +1134,43 @@ body {
         min-height: 26px;
     }
 }
+
+/* ============================================
+   BOTONES DE EDICIÓN
+   ============================================ */
+.btn-edit-song {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all var(--transition);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    min-width: 28px;
+}
+
+.btn-edit-song:hover {
+    background: rgba(245, 124, 0, 0.08);
+    color: #F57C00;
+}
+
+/* ============================================
+   RESPONSIVE - Ajustes para botones
+   ============================================ */
+@media (max-width: 600px) {
+    .btn-edit-song,
+    .btn-delete-song {
+        min-height: 24px;
+        min-width: 24px;
+    }
+
+    .btn-edit-song svg,
+    .btn-delete-song svg {
+        width: 12px;
+        height: 12px;
+    }
+}
