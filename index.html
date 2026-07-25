@@ -87,7 +87,6 @@
 
     <!-- ===== App Content ===== -->
     <div id="appContent" style="display:none;">
-        <!-- App Bar -->
         <header class="app-bar">
             <div class="app-bar-content">
                 <div class="app-brand">
@@ -123,7 +122,6 @@
             </div>
         </header>
 
-        <!-- Navegación Inferior -->
         <nav class="bottom-nav">
             <button class="nav-item" data-view="setlists-view">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -132,7 +130,7 @@
                 </svg>
                 <span>Mis Set Lists</span>
             </button>
-            <button class="nav-item active" data-view="groups-view">
+            <button class="nav-item" data-view="groups-view">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                     <circle cx="9" cy="7" r="4"/>
@@ -141,7 +139,7 @@
                 </svg>
                 <span>Grupos</span>
             </button>
-            <button class="nav-item" data-view="community-view">
+            <button class="nav-item active" data-view="community-view">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/>
                     <circle cx="12" cy="10" r="3"/>
@@ -235,7 +233,7 @@
             </section>
 
             <!-- ===== VISTA DE GRUPOS ===== -->
-            <section id="groups-view" class="view active">
+            <section id="groups-view" class="view">
                 <div class="view-header">
                     <h2>Grupos de Alabanza</h2>
                     <div style="display: flex; gap: 8px;">
@@ -335,7 +333,6 @@
                     <div id="groupDescription" class="group-description-text"></div>
                 </div>
 
-                <!-- Solicitudes Pendientes -->
                 <div id="pendingRequestsSection" class="group-section" style="display:none;">
                     <div class="section-header">
                         <h3>Solicitudes Pendientes</h3>
@@ -393,17 +390,24 @@
                 <div id="group-lyrics-content" class="lyrics-content"></div>
             </section>
 
-            <!-- ===== VISTA DE COMUNIDAD ===== -->
-            <section id="community-view" class="view">
+            <!-- ===== VISTA DE COMUNIDAD CON LIKES Y FILTROS ===== -->
+            <section id="community-view" class="view active">
                 <div class="view-header">
                     <h2>Comunidad</h2>
-                    <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                         <div class="search-box">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"/>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                             </svg>
                             <input type="text" id="searchCommunity" placeholder="Buscar..." />
+                        </div>
+                        <div class="filter-container">
+                            <select id="filterSort" class="filter-select">
+                                <option value="recent">Más Recientes</option>
+                                <option value="mostLiked">Más Me Gusta</option>
+                                <option value="leastLiked">Menos Me Gusta</option>
+                            </select>
                         </div>
                         <button id="btnRefreshCommunity" class="search-btn" title="Actualizar">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -510,6 +514,8 @@
                 this.isPublic = false;
                 this.publishedBy = null;
                 this.publisherName = null;
+                this.likes = 0;
+                this.likedBy = [];
             }
 
             addSong(song) {
@@ -531,7 +537,9 @@
                     createdAt: this.createdAt,
                     isPublic: this.isPublic,
                     publishedBy: this.publishedBy,
-                    publisherName: this.publisherName
+                    publisherName: this.publisherName,
+                    likes: this.likes || 0,
+                    likedBy: this.likedBy || []
                 };
             }
 
@@ -541,6 +549,8 @@
                 setlist.isPublic = data.isPublic || false;
                 setlist.publishedBy = data.publishedBy || null;
                 setlist.publisherName = data.publisherName || null;
+                setlist.likes = data.likes || 0;
+                setlist.likedBy = data.likedBy || [];
                 if (data.songs) {
                     setlist.songs = data.songs.map(s => Song.fromJSON(s));
                 }
@@ -838,16 +848,15 @@
                     }
 
                     const group = Group.fromJSON(doc.data());
-                    
-                    // Eliminar el grupo de la colección
                     await db.collection('groups').doc(groupId).delete();
-                    
                     return { success: true, group: group };
                 } catch (error) {
                     console.error('Error eliminando grupo:', error);
                     return { success: false, error: error.message };
                 }
             }
+
+            // ===== PUBLIC SETLISTS CON LIKES =====
 
             static async publishSetlist(userId, setlist, userName) {
                 try {
@@ -856,6 +865,8 @@
                     pubData.publisherName = userName || 'Anónimo';
                     pubData.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
                     pubData.isPublic = true;
+                    pubData.likes = 0;
+                    pubData.likedBy = [];
                     
                     const docRef = await db.collection('public_setlists').add(pubData);
                     return { success: true, id: docRef.id };
@@ -935,12 +946,57 @@
                         setlist.isPublic = false;
                         setlist.publishedBy = null;
                         setlist.publisherName = null;
+                        setlist.likes = 0;
+                        setlist.likedBy = [];
                         return setlist;
                     }
                     return null;
                 } catch (error) {
                     console.error('Error importando:', error);
                     return null;
+                }
+            }
+
+            // ===== LIKES =====
+
+            static async toggleLike(publicId, userEmail) {
+                try {
+                    const docRef = db.collection('public_setlists').doc(publicId);
+                    const doc = await docRef.get();
+                    
+                    if (!doc.exists) {
+                        return { success: false, error: 'Set list no encontrado' };
+                    }
+
+                    const data = doc.data();
+                    const likedBy = data.likedBy || [];
+                    const likes = data.likes || 0;
+
+                    let newLikedBy;
+                    let newLikes;
+                    let liked = false;
+
+                    if (likedBy.includes(userEmail)) {
+                        // Quitar like
+                        newLikedBy = likedBy.filter(email => email !== userEmail);
+                        newLikes = likes - 1;
+                        liked = false;
+                    } else {
+                        // Agregar like
+                        newLikedBy = [...likedBy, userEmail];
+                        newLikes = likes + 1;
+                        liked = true;
+                    }
+
+                    await docRef.update({
+                        likes: newLikes,
+                        likedBy: newLikedBy
+                    });
+
+                    return { success: true, likes: newLikes, liked: liked };
+                } catch (error) {
+                    console.error('Error toggle like:', error);
+                    return { success: false, error: error.message };
                 }
             }
 
@@ -1213,10 +1269,8 @@
                             </div>
                             <button class="btn-delete-group" data-id="${group.id}" title="${group.members[0] === window.app?.auth?.getUser()?.email ? 'Eliminar grupo' : 'Salir del grupo'}">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    ${group.members[0] === window.app?.auth?.getUser()?.email ? 
-                                        '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>' :
-                                        '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'
-                                    }
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                                 </svg>
                             </button>
                         </div>
@@ -1360,6 +1414,8 @@
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
 
+            // ===== COMUNIDAD CON LIKES =====
+
             static renderCommunity(setlists) {
                 const container = document.getElementById('community-list');
                 if (!container) return;
@@ -1373,7 +1429,13 @@
                     return;
                 }
 
-                container.innerHTML = setlists.map(setlist => `
+                const userEmail = window.app?.auth?.getUser()?.email;
+
+                container.innerHTML = setlists.map(setlist => {
+                    const isLiked = setlist.likedBy && setlist.likedBy.includes(userEmail);
+                    const likeCount = setlist.likes || 0;
+                    
+                    return `
                     <div class="community-card" data-publicid="${setlist.publicId}">
                         <div class="community-card-header">
                             <h3>${UI.escapeHtml(setlist.name)}</h3>
@@ -1391,6 +1453,12 @@
                                 <span class="song-count-public">${setlist.getSongCount()} canciones</span>
                             </div>
                             <div class="community-actions">
+                                <button class="community-btn like-btn ${isLiked ? 'liked' : ''}" data-publicid="${setlist.publicId}">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="${isLiked ? '#E53935' : 'none'}" stroke="${isLiked ? '#E53935' : 'currentColor'}" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                    </svg>
+                                    <span class="like-count">${likeCount}</span>
+                                </button>
                                 <button class="community-btn import" data-publicid="${setlist.publicId}">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -1409,7 +1477,7 @@
                             </div>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             }
 
             static renderPublicSongs(setlist) {
@@ -1555,6 +1623,7 @@
                 this.publicSetlists = [];
                 this.currentPublicSetlist = null;
                 this.currentPublicSongIndex = null;
+                this.currentSort = 'recent';
                 
                 this.auth.onAuthStateChanged((user) => {
                     if (user) {
@@ -1730,6 +1799,11 @@
                     this.loadCommunitySetlists();
                 });
 
+                document.getElementById('filterSort')?.addEventListener('change', (e) => {
+                    this.currentSort = e.target.value;
+                    this.loadCommunitySetlists();
+                });
+
                 document.getElementById('btnBackToCommunity')?.addEventListener('click', () => {
                     UI.showView('community-view');
                     this.loadCommunitySetlists();
@@ -1814,6 +1888,36 @@
                     }
                 });
 
+                // LIKES en comunidad
+                document.getElementById('community-list')?.addEventListener('click', async (e) => {
+                    const likeBtn = e.target.closest('.like-btn');
+                    if (likeBtn) {
+                        e.stopPropagation();
+                        const publicId = likeBtn.dataset.publicid;
+                        await this.toggleLike(publicId);
+                        return;
+                    }
+
+                    const importBtn = e.target.closest('.community-btn.import');
+                    if (importBtn) {
+                        e.stopPropagation();
+                        this.importPublicSetlist(importBtn.dataset.publicid);
+                        return;
+                    }
+
+                    const viewBtn = e.target.closest('.community-btn.view');
+                    if (viewBtn) {
+                        e.stopPropagation();
+                        this.viewPublicSetlist(viewBtn.dataset.publicid);
+                        return;
+                    }
+
+                    const card = e.target.closest('.community-card');
+                    if (card) {
+                        this.viewPublicSetlist(card.dataset.publicid);
+                    }
+                });
+
                 document.getElementById('groups-list')?.addEventListener('click', (e) => {
                     const deleteBtn = e.target.closest('.btn-delete-group');
                     if (deleteBtn) {
@@ -1872,27 +1976,6 @@
                     if (songItem && !e.target.closest('button')) {
                         const index = Array.from(songItem.parentElement.children).indexOf(songItem);
                         this.openGroupSong(index);
-                    }
-                });
-
-                document.getElementById('community-list')?.addEventListener('click', (e) => {
-                    const importBtn = e.target.closest('.community-btn.import');
-                    if (importBtn) {
-                        e.stopPropagation();
-                        this.importPublicSetlist(importBtn.dataset.publicid);
-                        return;
-                    }
-
-                    const viewBtn = e.target.closest('.community-btn.view');
-                    if (viewBtn) {
-                        e.stopPropagation();
-                        this.viewPublicSetlist(viewBtn.dataset.publicid);
-                        return;
-                    }
-
-                    const card = e.target.closest('.community-card');
-                    if (card) {
-                        this.viewPublicSetlist(card.dataset.publicid);
                     }
                 });
             }
@@ -2128,7 +2211,7 @@
                 }
 
                 const code = inviteCode.toUpperCase().trim();
-                UI.showToast('🔍 Buscando grupo con código: ' + code);
+                UI.showToast('🔍 Buscando grupo...');
                 
                 const result = await StorageManager.joinGroupByInviteCode(code, user.email);
                 
@@ -3138,14 +3221,30 @@
                 );
             }
 
-            // ===== COMUNIDAD =====
+            // ===== COMUNIDAD CON LIKES =====
 
             async loadCommunitySetlists() {
                 UI.showToast('Cargando comunidad...');
                 try {
-                    this.publicSetlists = await StorageManager.getPublicSetlists();
-                    UI.renderCommunity(this.publicSetlists);
-                    UI.showToast(`${this.publicSetlists.length} set lists disponibles`);
+                    let setlists = await StorageManager.getPublicSetlists();
+                    
+                    // Ordenar según filtro seleccionado
+                    switch(this.currentSort) {
+                        case 'mostLiked':
+                            setlists.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+                            break;
+                        case 'leastLiked':
+                            setlists.sort((a, b) => (a.likes || 0) - (b.likes || 0));
+                            break;
+                        case 'recent':
+                        default:
+                            // Ya vienen ordenados por fecha descendente
+                            break;
+                    }
+                    
+                    this.publicSetlists = setlists;
+                    UI.renderCommunity(setlists);
+                    UI.showToast(`${setlists.length} set lists disponibles`);
                 } catch (error) {
                     console.error('Error cargando comunidad:', error);
                     UI.showToast('Error cargando comunidad');
@@ -3159,6 +3258,35 @@
                     (s.publisherName && s.publisherName.toLowerCase().includes(query.toLowerCase()))
                 );
                 UI.renderCommunity(filtered);
+            }
+
+            async toggleLike(publicId) {
+                const user = this.auth.getUser();
+                if (!user) {
+                    UI.showToast('Debes iniciar sesión para dar like');
+                    return;
+                }
+
+                const result = await StorageManager.toggleLike(publicId, user.email);
+                if (result.success) {
+                    // Actualizar el setlist en la lista local
+                    const setlist = this.publicSetlists.find(s => s.publicId === publicId);
+                    if (setlist) {
+                        setlist.likes = result.likes;
+                        if (result.liked) {
+                            if (!setlist.likedBy) setlist.likedBy = [];
+                            if (!setlist.likedBy.includes(user.email)) {
+                                setlist.likedBy.push(user.email);
+                            }
+                        } else {
+                            setlist.likedBy = (setlist.likedBy || []).filter(email => email !== user.email);
+                        }
+                    }
+                    // Re-renderizar la comunidad
+                    UI.renderCommunity(this.publicSetlists);
+                } else {
+                    UI.showToast('Error: ' + result.error);
+                }
             }
 
             async viewPublicSetlist(publicId) {
