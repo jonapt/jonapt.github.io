@@ -19,17 +19,26 @@
     <div id="loginScreen" class="login-screen">
         <div class="login-container">
             <div class="login-header">
-                <h1>🎵 Setlify</h1>
-                <p>Gestiona tus set lists musicales</p>
+                <div class="logo-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1A237E" stroke-width="2">
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+                        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/>
+                        <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                    </svg>
+                </div>
+                <h1>Setlify</h1>
+                <p>Gestión profesional de set lists</p>
             </div>
 
             <!-- Login Form -->
             <form id="loginForm" class="auth-form">
                 <div class="form-group">
-                    <input type="email" id="loginEmail" placeholder="📧 Email" required>
+                    <label>Correo electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="ejemplo@empresa.com" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" id="loginPassword" placeholder="🔒 Contraseña" required>
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="primary-btn full-width">Iniciar Sesión</button>
                 <p class="auth-switch">
@@ -44,16 +53,20 @@
             <!-- Register Form -->
             <form id="registerForm" class="auth-form" style="display:none;">
                 <div class="form-group">
-                    <input type="text" id="registerName" placeholder="👤 Nombre completo" required>
+                    <label>Nombre completo</label>
+                    <input type="text" id="registerName" placeholder="Nombre Apellido" required>
                 </div>
                 <div class="form-group">
-                    <input type="email" id="registerEmail" placeholder="📧 Email" required>
+                    <label>Correo electrónico</label>
+                    <input type="email" id="registerEmail" placeholder="ejemplo@empresa.com" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" id="registerPassword" placeholder="🔒 Contraseña (mínimo 6 caracteres)" required>
+                    <label>Contraseña</label>
+                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" id="registerConfirmPassword" placeholder="🔒 Confirmar contraseña" required>
+                    <label>Confirmar contraseña</label>
+                    <input type="password" id="registerConfirmPassword" placeholder="Confirmar contraseña" required>
                 </div>
                 <button type="submit" class="primary-btn full-width">Registrarse</button>
                 <p class="auth-switch">
@@ -65,7 +78,8 @@
             <!-- Reset Password Form -->
             <form id="resetPasswordForm" class="auth-form" style="display:none;">
                 <div class="form-group">
-                    <input type="email" id="resetEmail" placeholder="📧 Email" required>
+                    <label>Correo electrónico</label>
+                    <input type="email" id="resetEmail" placeholder="ejemplo@empresa.com" required>
                 </div>
                 <button type="submit" class="primary-btn full-width">Enviar enlace de recuperación</button>
                 <p class="auth-switch">
@@ -77,21 +91,36 @@
 
     <!-- App Content -->
     <div id="appContent" style="display:none;">
+        <!-- App Bar -->
         <header class="app-bar">
             <div class="app-bar-content">
-                <h1>🎵 Setlify</h1>
+                <div class="app-brand">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+                        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/>
+                        <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                    </svg>
+                    <span class="brand-text">Setlify</span>
+                </div>
                 <div class="app-bar-actions">
-                    <span id="userEmail" style="color: white; margin-right: 12px; font-size: 14px;"></span>
-                    <button id="logoutBtn" class="logout-btn">🚪 Salir</button>
-                    <button id="btnExport" class="icon-btn" title="Exportar">
-                        <svg viewBox="0 0 24 24" width="24" height="24">
-                            <path fill="white" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    <!-- Perfil de usuario -->
+                    <div id="userProfile" class="user-profile">
+                        <div id="userAvatar" class="user-avatar">J</div>
+                        <span id="userDisplayName" class="user-name"></span>
+                    </div>
+                    <button id="logoutBtn" class="logout-btn">Salir</button>
+                    <button id="btnExport" class="icon-btn" title="Exportar datos">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
                     </button>
-                    <button id="btnImport" class="icon-btn" title="Importar">
-                        <svg viewBox="0 0 24 24" width="24" height="24">
-                            <path fill="white" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                            <path fill="white" d="M5 18v2h14v-2H5z"/>
+                    <button id="btnImport" class="icon-btn" title="Importar datos">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
                         </svg>
                     </button>
                     <input type="file" id="fileInput" accept=".json" style="display:none">
@@ -100,35 +129,72 @@
         </header>
 
         <main class="container">
+            <!-- Vista de SetLists -->
             <section id="setlists-view" class="view active">
                 <div class="view-header">
-                    <h2>📋 Mis Set Lists</h2>
+                    <h2>Mis Set Lists</h2>
                     <div style="display: flex; gap: 8px;">
-                        <button id="btnPublishSetlist" class="primary-btn small" style="display:none;">🌐 Publicar</button>
-                        <button id="btnAddSetlist" class="primary-btn">+ Nuevo</button>
+                        <button id="btnAddSetlist" class="primary-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Nuevo
+                        </button>
                     </div>
                 </div>
                 <div id="setlists-list" class="cards-grid"></div>
             </section>
 
+            <!-- Vista de Canciones -->
             <section id="songs-view" class="view">
                 <div class="view-header">
-                    <button id="btnBackToSetlists" class="back-btn">← Volver</button>
+                    <button id="btnBackToSetlists" class="back-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Volver
+                    </button>
                     <h2 id="setlist-title">Set List</h2>
-                    <button id="btnAddSong" class="primary-btn small">+ Canción</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="btnShareSetlist" class="primary-btn small secondary" style="display:none;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="18" cy="5" r="3"/>
+                                <circle cx="6" cy="12" r="3"/>
+                                <circle cx="18" cy="19" r="3"/>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                            </svg>
+                            Compartir
+                        </button>
+                        <button id="btnAddSong" class="primary-btn small">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Canción
+                        </button>
+                    </div>
                 </div>
                 <div id="songs-list" class="songs-list"></div>
             </section>
 
+            <!-- Vista de Letras -->
             <section id="lyrics-view" class="view">
                 <div class="view-header">
-                    <button id="btnBackToSongs" class="back-btn">← Volver</button>
+                    <button id="btnBackToSongs" class="back-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Volver
+                    </button>
                     <h2 id="song-title">Canción</h2>
                 </div>
                 <div id="lyrics-content" class="lyrics-content"></div>
             </section>
         </main>
 
+        <!-- Modal -->
         <div id="modal" class="modal">
             <div class="modal-content">
                 <div id="modal-body"></div>
@@ -136,7 +202,6 @@
         </div>
     </div>
 
-    <!-- Scripts - TODOS LOS SCRIPTS EN UN SOLO ARCHIVO -->
     <script>
         // ============================================
         // CONFIGURACIÓN DE FIREBASE
@@ -275,9 +340,9 @@
                 if (setlists.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p style="color: var(--text-secondary); text-align: center; padding: 60px 0;">
-                                🎵 No hay set lists creados.<br>
-                                ¡Crea tu primer set list!
+                            <p class="empty-message">
+                                No hay set lists creados.<br>
+                                Crea tu primer set list
                             </p>
                         </div>
                     `;
@@ -287,7 +352,7 @@
                 container.innerHTML = setlists.map(setlist => `
                     <div class="card" data-id="${setlist.id}">
                         <h3>${UI.escapeHtml(setlist.name)}</h3>
-                        <span class="key-badge">🎼 ${setlist.key}</span>
+                        <span class="key-badge">Tonalidad: ${setlist.key}</span>
                         <div class="song-count">${setlist.getSongCount()} canciones</div>
                     </div>
                 `).join('');
@@ -299,12 +364,18 @@
 
                 document.getElementById('setlist-title').textContent = setlist.name;
 
+                // Mostrar botón de compartir
+                const shareBtn = document.getElementById('btnShareSetlist');
+                if (shareBtn) {
+                    shareBtn.style.display = setlist.songs.length > 0 ? 'inline-flex' : 'none';
+                }
+
                 if (setlist.songs.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p style="color: var(--text-secondary); text-align: center; padding: 40px 0;">
-                                📝 No hay canciones en este set list.<br>
-                                ¡Agrega tu primera canción!
+                            <p class="empty-message">
+                                No hay canciones en este set list.<br>
+                                Agrega tu primera canción
                             </p>
                         </div>
                     `;
@@ -317,7 +388,7 @@
                             <div class="song-title">${UI.escapeHtml(song.title)}</div>
                             <div class="song-artist">${UI.escapeHtml(song.artist || 'Artista desconocido')}</div>
                         </div>
-                        <span class="song-key">🎼 ${song.key}</span>
+                        <span class="song-key">${song.key}</span>
                     </div>
                 `).join('');
             }
@@ -326,7 +397,7 @@
                 document.getElementById('song-title').textContent = song.title;
                 const container = document.getElementById('lyrics-content');
                 if (!container) return;
-                container.textContent = song.lyrics || '📝 No hay letra disponible.';
+                container.textContent = song.lyrics || 'No hay letra disponible.';
             }
 
             static showModal(title, fields, onSubmit, submitLabel = 'Guardar') {
@@ -457,9 +528,9 @@
                         this.onAuthChange(user);
                     }
                     if (user) {
-                        console.log('✅ Usuario autenticado:', user.email);
+                        console.log('Usuario autenticado:', user.email);
                     } else {
-                        console.log('❌ Usuario no autenticado');
+                        console.log('Usuario no autenticado');
                     }
                 });
             }
@@ -541,7 +612,7 @@
                     if (user) {
                         this.loadUserData();
                         this.showAppContent();
-                        UI.showToast(`👋 Bienvenido, ${user.displayName || user.email}`);
+                        UI.showToast(`Bienvenido, ${user.displayName || user.email}`);
                     } else {
                         this.showLoginScreen();
                     }
@@ -603,6 +674,10 @@
                     this.showAddSongModal();
                 });
 
+                document.getElementById('btnShareSetlist')?.addEventListener('click', () => {
+                    this.shareSetlist();
+                });
+
                 document.getElementById('btnBackToSetlists')?.addEventListener('click', () => {
                     UI.showView('setlists-view');
                     this.renderSetlists();
@@ -655,14 +730,14 @@
                 const password = document.getElementById('loginPassword').value;
                 
                 if (!email || !password) {
-                    UI.showToast('⚠️ Por favor ingresa email y contraseña');
+                    UI.showToast('Por favor ingresa email y contraseña');
                     return;
                 }
 
-                UI.showToast('🔄 Iniciando sesión...');
+                UI.showToast('Iniciando sesión...');
                 const result = await this.auth.login(email, password);
                 if (!result.success) {
-                    UI.showToast('❌ Error: ' + result.error);
+                    UI.showToast('Error: ' + result.error);
                 }
             }
 
@@ -672,35 +747,34 @@
                 const password = document.getElementById('registerPassword').value;
                 const confirmPassword = document.getElementById('registerConfirmPassword').value;
 
-                console.log('📝 Registro intentado:', { name, email, passwordLength: password?.length });
-
                 if (!name || !email || !password) {
-                    UI.showToast('⚠️ Todos los campos son requeridos');
+                    UI.showToast('Todos los campos son requeridos');
                     return;
                 }
 
                 if (password !== confirmPassword) {
-                    UI.showToast('⚠️ Las contraseñas no coinciden');
+                    UI.showToast('Las contraseñas no coinciden');
                     return;
                 }
 
                 if (password.length < 6) {
-                    UI.showToast('⚠️ La contraseña debe tener al menos 6 caracteres');
+                    UI.showToast('La contraseña debe tener al menos 6 caracteres');
                     return;
                 }
 
-                UI.showToast('🔄 Registrando usuario...');
-                console.log('✅ Intentando registrar en Firebase...');
-                
+                UI.showToast('Registrando usuario...');
                 const result = await this.auth.register(email, password, name);
-                console.log('📊 Resultado del registro:', result);
                 
                 if (!result.success) {
-                    UI.showToast('❌ Error: ' + result.error);
-                    console.error('❌ Error detallado:', result.error);
-                } else {
-                    UI.showToast('✅ ¡Registro exitoso!');
-                    console.log('✅ Registro exitoso');
+                    let errorMessage = result.error;
+                    if (errorMessage.includes('email-already-in-use')) {
+                        errorMessage = 'Este email ya está registrado.';
+                    } else if (errorMessage.includes('invalid-email')) {
+                        errorMessage = 'El email no es válido.';
+                    } else if (errorMessage.includes('weak-password')) {
+                        errorMessage = 'La contraseña es muy débil.';
+                    }
+                    UI.showToast('Error: ' + errorMessage);
                 }
             }
 
@@ -709,25 +783,147 @@
                     await this.auth.logout();
                     this.setlists = [];
                     this.showLoginScreen();
-                    UI.showToast('👋 Sesión cerrada');
+                    UI.showToast('Sesión cerrada');
                 });
             }
 
             async handleResetPassword() {
                 const email = document.getElementById('resetEmail').value.trim();
                 if (!email) {
-                    UI.showToast('⚠️ Por favor ingresa tu email');
+                    UI.showToast('Por favor ingresa tu email');
                     return;
                 }
 
-                UI.showToast('🔄 Enviando enlace...');
+                UI.showToast('Enviando enlace...');
                 const result = await this.auth.resetPassword(email);
                 if (result.success) {
-                    UI.showToast('✅ Revisa tu correo');
+                    UI.showToast('Revisa tu correo para restablecer la contraseña');
                     this.showLoginScreenOnly();
                 } else {
-                    UI.showToast('❌ Error: ' + result.error);
+                    UI.showToast('Error: ' + result.error);
                 }
+            }
+
+            // ===== COMPARTIR EN REDES SOCIALES =====
+
+            async shareSetlist() {
+                const setlist = this.getCurrentSetlist();
+                if (!setlist) {
+                    UI.showToast('No hay set list seleccionado');
+                    return;
+                }
+
+                if (setlist.songs.length === 0) {
+                    UI.showToast('El set list está vacío. Agrega canciones primero.');
+                    return;
+                }
+
+                // Generar texto para compartir
+                const songList = setlist.songs.map((song, i) => 
+                    `${i + 1}. ${song.title}${song.artist ? ' - ' + song.artist : ''} (${song.key})`
+                ).join('\n');
+
+                const shareText = `SET LIST: ${setlist.name}\n` +
+                                  `Tonalidad: ${setlist.key}\n` +
+                                  `Canciones:\n${songList}\n\n` +
+                                  `Creado con Setlify`;
+
+                // Usar Web Share API (nativa en móviles)
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: `Set List: ${setlist.name}`,
+                            text: shareText,
+                        });
+                        UI.showToast('Compartido exitosamente');
+                        return;
+                    } catch (error) {
+                        if (error.name !== 'AbortError') {
+                            console.error('Error al compartir:', error);
+                        } else {
+                            return;
+                        }
+                    }
+                }
+
+                // Fallback: copiar al portapapeles
+                try {
+                    await navigator.clipboard.writeText(shareText);
+                    UI.showToast('Texto copiado al portapapeles');
+                    
+                    UI.showConfirm(
+                        '¿Quieres abrir una red social para compartir?',
+                        () => {
+                            this.showSocialMediaOptions(shareText);
+                        }
+                    );
+                } catch (error) {
+                    UI.showModal(
+                        'Compartir Set List',
+                        [
+                            { 
+                                id: 'shareText', 
+                                label: 'Copia este texto para compartir', 
+                                type: 'textarea', 
+                                value: shareText 
+                            }
+                        ],
+                        (data) => {
+                            UI.closeModal();
+                            navigator.clipboard.writeText(data.shareText);
+                            UI.showToast('Texto copiado');
+                            this.showSocialMediaOptions(data.shareText);
+                        },
+                        'Copiar y compartir'
+                    );
+                }
+            }
+
+            showSocialMediaOptions(text) {
+                const encodedText = encodeURIComponent(text);
+                const url = encodeURIComponent(window.location.href);
+                
+                UI.showModal(
+                    'Compartir en redes sociales',
+                    [
+                        { 
+                            id: 'socialSelect', 
+                            label: 'Selecciona una red social', 
+                            type: 'select',
+                            options: ['WhatsApp', 'Twitter', 'Facebook', 'Telegram', 'LinkedIn'],
+                            value: 'WhatsApp'
+                        }
+                    ],
+                    (data) => {
+                        const platform = data.socialSelect;
+                        let shareUrl = '';
+                        
+                        switch(platform) {
+                            case 'WhatsApp':
+                                shareUrl = `https://wa.me/?text=${encodedText}`;
+                                break;
+                            case 'Twitter':
+                                shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}`;
+                                break;
+                            case 'Facebook':
+                                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
+                                break;
+                            case 'Telegram':
+                                shareUrl = `https://t.me/share/url?url=${url}&text=${encodedText}`;
+                                break;
+                            case 'LinkedIn':
+                                shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+                                break;
+                        }
+                        
+                        if (shareUrl) {
+                            window.open(shareUrl, '_blank', 'width=600,height=500');
+                            UI.closeModal();
+                            UI.showToast(`Abriendo ${platform}...`);
+                        }
+                    },
+                    'Compartir'
+                );
             }
 
             // ===== VISTAS =====
@@ -740,9 +936,13 @@
             showAppContent() {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('appContent').style.display = 'block';
+                
                 const user = this.auth.getUser();
                 if (user) {
-                    document.getElementById('userEmail').textContent = user.email;
+                    const displayName = user.displayName || user.email?.split('@')[0] || 'Usuario';
+                    document.getElementById('userDisplayName').textContent = displayName;
+                    const initial = displayName.charAt(0).toUpperCase();
+                    document.getElementById('userAvatar').textContent = initial;
                 }
             }
 
@@ -771,12 +971,11 @@
                 if (!user) return;
 
                 try {
-                    UI.showToast('📥 Cargando datos...');
                     this.setlists = await StorageManager.loadUserSetlists(user.uid);
                     this.renderSetlists();
                 } catch (error) {
                     console.error('Error cargando datos:', error);
-                    UI.showToast('❌ Error cargando datos');
+                    UI.showToast('Error cargando datos');
                 }
             }
 
@@ -788,7 +987,7 @@
                     await StorageManager.saveUserSetlists(user.uid, this.setlists);
                 } catch (error) {
                     console.error('Error guardando:', error);
-                    UI.showToast('❌ Error guardando datos');
+                    UI.showToast('Error guardando datos');
                 }
             }
 
@@ -827,14 +1026,14 @@
                 const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
                 
                 UI.showModal(
-                    '🎵 Nuevo Set List',
+                    'Nuevo Set List',
                     [
                         { id: 'name', label: 'Nombre del Set List', type: 'text', required: true },
                         { id: 'key', label: 'Tonalidad', type: 'select', options: keys, value: 'C', required: true }
                     ],
                     async (data) => {
                         if (!data.name.trim()) {
-                            UI.showToast('⚠️ Por favor ingresa un nombre');
+                            UI.showToast('Por favor ingresa un nombre');
                             return;
                         }
                         const setlist = new SetList(null, data.name.trim(), data.key);
@@ -842,7 +1041,7 @@
                         await this.saveUserData();
                         this.renderSetlists();
                         UI.closeModal();
-                        UI.showToast('✅ Set List creado');
+                        UI.showToast('Set List creado');
                     },
                     'Crear'
                 );
@@ -851,12 +1050,12 @@
             showAddSongModal() {
                 const setlist = this.getCurrentSetlist();
                 if (!setlist) {
-                    UI.showToast('⚠️ Primero selecciona un Set List');
+                    UI.showToast('Primero selecciona un Set List');
                     return;
                 }
 
                 UI.showModal(
-                    '🎶 Agregar Canción',
+                    'Agregar Canción',
                     [
                         { id: 'title', label: 'Título', type: 'text', required: true },
                         { id: 'artist', label: 'Artista', type: 'text' },
@@ -865,7 +1064,7 @@
                     ],
                     async (data) => {
                         if (!data.title.trim()) {
-                            UI.showToast('⚠️ Por favor ingresa un título');
+                            UI.showToast('Por favor ingresa un título');
                             return;
                         }
                         const song = new Song(null, data.title.trim(), data.artist.trim(), data.key, data.lyrics);
@@ -873,7 +1072,7 @@
                         await this.saveUserData();
                         this.renderSongs();
                         UI.closeModal();
-                        UI.showToast('✅ Canción agregada');
+                        UI.showToast('Canción agregada');
                     },
                     'Agregar'
                 );
@@ -883,7 +1082,7 @@
 
             exportData() {
                 if (this.setlists.length === 0) {
-                    UI.showToast('⚠️ No hay datos para exportar');
+                    UI.showToast('No hay datos para exportar');
                     return;
                 }
 
@@ -897,7 +1096,7 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                UI.showToast('📤 Datos exportados');
+                UI.showToast('Datos exportados');
             }
 
             importData(file) {
@@ -906,7 +1105,7 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         if (!Array.isArray(data)) {
-                            UI.showToast('❌ Formato inválido');
+                            UI.showToast('Formato inválido');
                             return;
                         }
 
@@ -917,11 +1116,11 @@
                                 this.setlists = [...this.setlists, ...imported];
                                 await this.saveUserData();
                                 this.renderSetlists();
-                                UI.showToast(`✅ ${imported.length} set lists importados`);
+                                UI.showToast(`${imported.length} set lists importados`);
                             }
                         );
                     } catch (error) {
-                        UI.showToast('❌ Error al importar');
+                        UI.showToast('Error al importar');
                         console.error(error);
                     }
                 };
