@@ -108,24 +108,29 @@
                         <span id="userDisplayName" class="user-name"></span>
                     </div>
                     <button id="logoutBtn" class="logout-btn">Salir</button>
-                    <button id="btnExport" class="icon-btn" title="Exportar todos los datos">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7 10 12 15 17 10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                    </button>
-                    <button id="btnImport" class="icon-btn" title="Importar datos">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="17 8 12 3 7 8"/>
-                            <line x1="12" y1="3" x2="12" y2="15"/>
-                        </svg>
-                    </button>
-                    <input type="file" id="fileInput" accept=".json" style="display:none">
                 </div>
             </div>
         </header>
+
+        <!-- Navegación Inferior -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-view="setlists-view">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                <span>Mis Set Lists</span>
+            </button>
+            <button class="nav-item" data-view="community-view">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Comunidad</span>
+            </button>
+        </nav>
 
         <main class="container">
             <!-- Vista de SetLists -->
@@ -156,6 +161,14 @@
                     </button>
                     <h2 id="setlist-title">Set List</h2>
                     <div style="display: flex; gap: 8px;">
+                        <button id="btnPublishSetlist" class="primary-btn small" style="display:none; background: #1A237E;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Publicar
+                        </button>
                         <button id="btnShareSetlist" class="primary-btn small secondary" style="display:none;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="18" cy="5" r="3"/>
@@ -190,6 +203,65 @@
                     <h2 id="song-title">Canción</h2>
                 </div>
                 <div id="lyrics-content" class="lyrics-content"></div>
+            </section>
+
+            <!-- ===== VISTA DE COMUNIDAD ===== -->
+            <section id="community-view" class="view">
+                <div class="view-header">
+                    <h2>Comunidad</h2>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <div class="search-box">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            <input type="text" id="searchCommunity" placeholder="Buscar set lists..." />
+                        </div>
+                        <button id="btnRefreshCommunity" class="icon-btn-small" title="Actualizar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 4 23 10 17 10"/>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="community-list" class="community-grid"></div>
+            </section>
+
+            <!-- Vista de Detalle de Set List Público -->
+            <section id="public-songs-view" class="view">
+                <div class="view-header">
+                    <button id="btnBackToCommunity" class="back-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Volver
+                    </button>
+                    <h2 id="public-setlist-title">Set List</h2>
+                    <button id="btnImportPublic" class="primary-btn small" style="display:none;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Importar
+                    </button>
+                </div>
+                <div id="public-songs-list" class="songs-list"></div>
+            </section>
+
+            <!-- Vista de Letras Públicas -->
+            <section id="public-lyrics-view" class="view">
+                <div class="view-header">
+                    <button id="btnBackToPublicSongs" class="back-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Volver
+                    </button>
+                    <h2 id="public-song-title">Canción</h2>
+                </div>
+                <div id="public-lyrics-content" class="lyrics-content"></div>
             </section>
         </main>
 
@@ -229,6 +301,9 @@
                 this.key = key;
                 this.songs = [];
                 this.createdAt = new Date().toISOString();
+                this.isPublic = false;
+                this.publishedBy = null;
+                this.publisherName = null;
             }
 
             addSong(song) {
@@ -247,13 +322,19 @@
                     name: this.name,
                     key: this.key,
                     songs: this.songs.map(s => s.toJSON()),
-                    createdAt: this.createdAt
+                    createdAt: this.createdAt,
+                    isPublic: this.isPublic,
+                    publishedBy: this.publishedBy,
+                    publisherName: this.publisherName
                 };
             }
 
             static fromJSON(data) {
                 const setlist = new SetList(data.id, data.name, data.key);
                 setlist.createdAt = data.createdAt || new Date().toISOString();
+                setlist.isPublic = data.isPublic || false;
+                setlist.publishedBy = data.publishedBy || null;
+                setlist.publisherName = data.publisherName || null;
                 if (data.songs) {
                     setlist.songs = data.songs.map(s => Song.fromJSON(s));
                 }
@@ -321,6 +402,66 @@
                     return [];
                 }
             }
+
+            // ===== MÉTODOS PARA COMUNIDAD =====
+
+            static async publishSetlist(userId, setlist, userName) {
+                try {
+                    const pubData = setlist.toJSON();
+                    pubData.publishedBy = userId;
+                    pubData.publisherName = userName || 'Anónimo';
+                    pubData.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
+                    pubData.isPublic = true;
+                    
+                    const docRef = await db.collection('public_setlists').add(pubData);
+                    return { success: true, id: docRef.id };
+                } catch (error) {
+                    console.error('Error publicando:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            static async getPublicSetlists() {
+                try {
+                    const snapshot = await db.collection('public_setlists')
+                        .orderBy('publishedAt', 'desc')
+                        .limit(100)
+                        .get();
+                    
+                    const setlists = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const setlist = SetList.fromJSON(data);
+                        setlist.publicId = doc.id;
+                        setlist.publisherName = data.publisherName || 'Anónimo';
+                        setlists.push(setlist);
+                    });
+                    return setlists;
+                } catch (error) {
+                    console.error('Error obteniendo públicos:', error);
+                    return [];
+                }
+            }
+
+            static async importPublicSetlist(publicId, userId) {
+                try {
+                    const doc = await db.collection('public_setlists').doc(publicId).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const setlist = SetList.fromJSON(data);
+                        // Generar nuevo ID para no sobrescribir
+                        setlist.id = crypto.randomUUID();
+                        setlist.isPublic = false;
+                        setlist.publishedBy = null;
+                        setlist.publisherName = null;
+                        return setlist;
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error importando:', error);
+                    return null;
+                }
+            }
         }
 
         // ============================================
@@ -330,6 +471,11 @@
             static showView(viewId) {
                 document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
                 document.getElementById(viewId).classList.add('active');
+                
+                // Actualizar navegación
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.view === viewId);
+                });
             }
 
             static renderSetlists(setlists) {
@@ -353,6 +499,7 @@
                         <div class="card-header">
                             <h3>${UI.escapeHtml(setlist.name)}</h3>
                             <div class="card-actions">
+                                ${setlist.isPublic ? '<span class="public-badge">Público</span>' : ''}
                                 <button class="btn-export-single" data-id="${setlist.id}" title="Exportar este set list">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -381,8 +528,14 @@
                 document.getElementById('setlist-title').textContent = setlist.name;
 
                 const shareBtn = document.getElementById('btnShareSetlist');
-                if (shareBtn) {
-                    shareBtn.style.display = setlist.songs.length > 0 ? 'inline-flex' : 'none';
+                const publishBtn = document.getElementById('btnPublishSetlist');
+                
+                const hasSongs = setlist.songs.length > 0;
+                if (shareBtn) shareBtn.style.display = hasSongs ? 'inline-flex' : 'none';
+                if (publishBtn) {
+                    publishBtn.style.display = hasSongs ? 'inline-flex' : 'none';
+                    publishBtn.textContent = setlist.isPublic ? '✔ Publicado' : 'Publicar';
+                    publishBtn.style.background = setlist.isPublic ? '#2E7D32' : '#1A237E';
                 }
 
                 if (setlist.songs.length === 0) {
@@ -419,6 +572,96 @@
             static renderLyrics(song) {
                 document.getElementById('song-title').textContent = song.title;
                 const container = document.getElementById('lyrics-content');
+                if (!container) return;
+                container.textContent = song.lyrics || 'No hay letra disponible.';
+            }
+
+            // ===== MÉTODOS PARA COMUNIDAD =====
+
+            static renderCommunity(setlists) {
+                const container = document.getElementById('community-list');
+                if (!container) return;
+
+                if (setlists.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p class="empty-message">
+                                No hay set lists públicos disponibles.<br>
+                                ¡Sé el primero en compartir!
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = setlists.map(setlist => `
+                    <div class="community-card" data-publicid="${setlist.publicId}">
+                        <div class="community-card-header">
+                            <h3>${UI.escapeHtml(setlist.name)}</h3>
+                            <span class="key-badge">${setlist.key}</span>
+                        </div>
+                        <div class="community-card-body">
+                            <div class="community-meta">
+                                <span class="publisher">👤 ${UI.escapeHtml(setlist.publisherName || 'Anónimo')}</span>
+                                <span class="song-count-public">${setlist.getSongCount()} canciones</span>
+                            </div>
+                            <div class="community-actions">
+                                <button class="btn-import-public" data-publicid="${setlist.publicId}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7 10 12 15 17 10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                    Importar
+                                </button>
+                                <button class="btn-view-public" data-publicid="${setlist.publicId}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    Ver
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            static renderPublicSongs(setlist) {
+                const container = document.getElementById('public-songs-list');
+                if (!container) return;
+
+                document.getElementById('public-setlist-title').textContent = setlist.name;
+                
+                const importBtn = document.getElementById('btnImportPublic');
+                if (importBtn) {
+                    importBtn.style.display = 'inline-flex';
+                    importBtn.dataset.publicid = setlist.publicId;
+                }
+
+                if (setlist.songs.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p class="empty-message">Este set list no tiene canciones.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = setlist.songs.map((song, index) => `
+                    <div class="song-item" onclick="window.app.openPublicSong(${index})">
+                        <div class="song-info">
+                            <div class="song-title">${UI.escapeHtml(song.title)}</div>
+                            <div class="song-artist">${UI.escapeHtml(song.artist || 'Artista desconocido')}</div>
+                        </div>
+                        <span class="song-key">${song.key}</span>
+                    </div>
+                `).join('');
+            }
+
+            static renderPublicLyrics(song) {
+                document.getElementById('public-song-title').textContent = song.title;
+                const container = document.getElementById('public-lyrics-content');
                 if (!container) return;
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
@@ -614,6 +857,9 @@
                 this.setlists = [];
                 this.currentSetlistId = null;
                 this.currentSongIndex = null;
+                this.publicSetlists = [];
+                this.currentPublicSetlist = null;
+                this.currentPublicSongIndex = null;
                 
                 this.auth.onAuthStateChanged((user) => {
                     if (user) {
@@ -674,6 +920,17 @@
                     this.handleResetPassword();
                 });
 
+                // Navegación
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const view = btn.dataset.view;
+                        UI.showView(view);
+                        if (view === 'community-view') {
+                            this.loadCommunitySetlists();
+                        }
+                    });
+                });
+
                 // Acciones principales
                 document.getElementById('btnAddSetlist')?.addEventListener('click', () => {
                     this.showAddSetlistModal();
@@ -687,6 +944,10 @@
                     this.shareSetlist();
                 });
 
+                document.getElementById('btnPublishSetlist')?.addEventListener('click', () => {
+                    this.publishSetlist();
+                });
+
                 document.getElementById('btnBackToSetlists')?.addEventListener('click', () => {
                     UI.showView('setlists-view');
                     this.renderSetlists();
@@ -695,6 +956,30 @@
                 document.getElementById('btnBackToSongs')?.addEventListener('click', () => {
                     UI.showView('songs-view');
                     this.renderSongs();
+                });
+
+                // Comunidad
+                document.getElementById('btnRefreshCommunity')?.addEventListener('click', () => {
+                    this.loadCommunitySetlists();
+                });
+
+                document.getElementById('btnBackToCommunity')?.addEventListener('click', () => {
+                    UI.showView('community-view');
+                    this.loadCommunitySetlists();
+                });
+
+                document.getElementById('btnBackToPublicSongs')?.addEventListener('click', () => {
+                    UI.showView('public-songs-view');
+                    if (this.currentPublicSetlist) {
+                        UI.renderPublicSongs(this.currentPublicSetlist);
+                    }
+                });
+
+                document.getElementById('btnImportPublic')?.addEventListener('click', (e) => {
+                    const publicId = e.currentTarget.dataset.publicid;
+                    if (publicId) {
+                        this.importPublicSetlist(publicId);
+                    }
                 });
 
                 // Exportar/Importar
@@ -717,6 +1002,11 @@
                     if (e.target === e.currentTarget) {
                         UI.closeModal();
                     }
+                });
+
+                // Búsqueda en comunidad
+                document.getElementById('searchCommunity')?.addEventListener('input', (e) => {
+                    this.filterCommunity(e.target.value);
                 });
 
                 // ===== EVENTOS CON DELEGACIÓN =====
@@ -750,6 +1040,28 @@
                         e.stopPropagation();
                         this.deleteSong(parseInt(deleteBtn.dataset.index));
                         return;
+                    }
+                });
+
+                // Comunidad: importar y ver
+                document.getElementById('community-list')?.addEventListener('click', (e) => {
+                    const importBtn = e.target.closest('.btn-import-public');
+                    if (importBtn) {
+                        e.stopPropagation();
+                        this.importPublicSetlist(importBtn.dataset.publicid);
+                        return;
+                    }
+
+                    const viewBtn = e.target.closest('.btn-view-public');
+                    if (viewBtn) {
+                        e.stopPropagation();
+                        this.viewPublicSetlist(viewBtn.dataset.publicid);
+                        return;
+                    }
+
+                    const card = e.target.closest('.community-card');
+                    if (card) {
+                        this.viewPublicSetlist(card.dataset.publicid);
                     }
                 });
             }
@@ -833,6 +1145,125 @@
                 } else {
                     UI.showToast('Error: ' + result.error);
                 }
+            }
+
+            // ===== PUBLICAR SET LIST =====
+
+            async publishSetlist() {
+                const setlist = this.getCurrentSetlist();
+                if (!setlist) {
+                    UI.showToast('No hay set list seleccionado');
+                    return;
+                }
+
+                if (setlist.songs.length === 0) {
+                    UI.showToast('El set list está vacío. Agrega canciones primero.');
+                    return;
+                }
+
+                if (setlist.isPublic) {
+                    UI.showToast('Este set list ya está publicado');
+                    return;
+                }
+
+                const user = this.auth.getUser();
+                if (!user) {
+                    UI.showToast('Debes iniciar sesión');
+                    return;
+                }
+
+                UI.showConfirm(
+                    `¿Publicar "${setlist.name}" en la comunidad?\nOtros músicos podrán verlo e importarlo.`,
+                    async () => {
+                        const userName = user.displayName || user.email?.split('@')[0] || 'Anónimo';
+                        const result = await StorageManager.publishSetlist(user.uid, setlist, userName);
+                        
+                        if (result.success) {
+                            setlist.isPublic = true;
+                            setlist.publishedBy = user.uid;
+                            setlist.publisherName = userName;
+                            await this.saveUserData();
+                            this.renderSongs();
+                            UI.showToast('¡Set list publicado en la comunidad!');
+                        } else {
+                            UI.showToast('Error al publicar: ' + result.error);
+                        }
+                    }
+                );
+            }
+
+            // ===== COMUNIDAD =====
+
+            async loadCommunitySetlists() {
+                UI.showToast('Cargando comunidad...');
+                try {
+                    this.publicSetlists = await StorageManager.getPublicSetlists();
+                    UI.renderCommunity(this.publicSetlists);
+                    UI.showToast(`${this.publicSetlists.length} set lists disponibles`);
+                } catch (error) {
+                    console.error('Error cargando comunidad:', error);
+                    UI.showToast('Error cargando comunidad');
+                }
+            }
+
+            filterCommunity(query) {
+                const filtered = this.publicSetlists.filter(s => 
+                    s.name.toLowerCase().includes(query.toLowerCase()) ||
+                    s.key.toLowerCase().includes(query.toLowerCase()) ||
+                    (s.publisherName && s.publisherName.toLowerCase().includes(query.toLowerCase()))
+                );
+                UI.renderCommunity(filtered);
+            }
+
+            async viewPublicSetlist(publicId) {
+                const setlist = this.publicSetlists.find(s => s.publicId === publicId);
+                if (!setlist) {
+                    UI.showToast('Set list no encontrado');
+                    return;
+                }
+
+                this.currentPublicSetlist = setlist;
+                this.currentPublicSongIndex = null;
+                UI.showView('public-songs-view');
+                UI.renderPublicSongs(setlist);
+            }
+
+            openPublicSong(index) {
+                const setlist = this.currentPublicSetlist;
+                if (!setlist || !setlist.songs[index]) return;
+                this.currentPublicSongIndex = index;
+                UI.renderPublicLyrics(setlist.songs[index]);
+                UI.showView('public-lyrics-view');
+            }
+
+            async importPublicSetlist(publicId) {
+                const user = this.auth.getUser();
+                if (!user) {
+                    UI.showToast('Debes iniciar sesión para importar');
+                    return;
+                }
+
+                // Verificar si ya existe
+                const existing = this.setlists.find(s => s.publicId === publicId);
+                if (existing) {
+                    UI.showToast('Ya tienes este set list en tu biblioteca');
+                    return;
+                }
+
+                UI.showConfirm(
+                    '¿Importar este set list a tu biblioteca?',
+                    async () => {
+                        const setlist = await StorageManager.importPublicSetlist(publicId, user.uid);
+                        if (setlist) {
+                            this.setlists.push(setlist);
+                            await this.saveUserData();
+                            this.renderSetlists();
+                            UI.showToast(`"${setlist.name}" importado a tu biblioteca`);
+                        } else {
+                            UI.showToast('Error al importar');
+                        }
+                    }
+                );
             }
 
             // ===== ELIMINAR SET LIST =====
@@ -1191,13 +1622,15 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         
-                        // Si es un set list individual
                         if (data.id && data.name && data.key !== undefined) {
                             UI.showConfirm(
                                 `Importar el set list "${data.name}"?`,
                                 async () => {
                                     const setlist = SetList.fromJSON(data);
                                     setlist.id = crypto.randomUUID();
+                                    setlist.isPublic = false;
+                                    setlist.publishedBy = null;
+                                    setlist.publisherName = null;
                                     this.setlists.push(setlist);
                                     await this.saveUserData();
                                     this.renderSetlists();
@@ -1207,12 +1640,17 @@
                             return;
                         }
                         
-                        // Si es un array de set lists
                         if (Array.isArray(data)) {
                             UI.showConfirm(
                                 `Se importarán ${data.length} set lists. ¿Agregar?`,
                                 async () => {
-                                    const imported = data.map(item => SetList.fromJSON(item));
+                                    const imported = data.map(item => {
+                                        const s = SetList.fromJSON(item);
+                                        s.isPublic = false;
+                                        s.publishedBy = null;
+                                        s.publisherName = null;
+                                        return s;
+                                    });
                                     this.setlists = [...this.setlists, ...imported];
                                     await this.saveUserData();
                                     this.renderSetlists();

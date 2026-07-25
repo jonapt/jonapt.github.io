@@ -709,3 +709,255 @@ body {
         padding: 16px;
     }
 }
+
+/* ===== NAVEGACIÓN INFERIOR ===== */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--surface);
+    border-top: 1px solid var(--divider);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 999;
+    padding: 0 8px;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    padding: 6px 16px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color var(--transition);
+    border-radius: var(--radius);
+    font-size: 11px;
+}
+
+.nav-item:hover {
+    color: var(--secondary);
+}
+
+.nav-item.active {
+    color: var(--primary);
+}
+
+.nav-item svg {
+    transition: stroke var(--transition);
+}
+
+.nav-item.active svg {
+    stroke: var(--primary);
+}
+
+/* ===== COMUNIDAD ===== */
+.community-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.community-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+    transition: transform var(--transition), box-shadow var(--transition);
+    border: 1px solid transparent;
+    cursor: default;
+}
+
+.community-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--divider);
+}
+
+.community-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.community-card-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.community-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.community-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.publisher {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.song-count-public {
+    background: var(--accent);
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.community-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.community-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-import-public {
+    background: var(--accent);
+    color: var(--secondary);
+}
+
+.btn-import-public:hover {
+    background: var(--secondary);
+    color: white;
+}
+
+.btn-view-public {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-view-public:hover {
+    background: var(--primary-dark);
+}
+
+/* ===== BÚSQUEDA ===== */
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1.5px solid var(--divider);
+    border-radius: var(--radius);
+    padding: 4px 12px;
+    transition: border-color var(--transition);
+}
+
+.search-box:focus-within {
+    border-color: var(--secondary);
+}
+
+.search-box input {
+    border: none;
+    background: none;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--text-primary);
+    width: 150px;
+    outline: none;
+    font-family: inherit;
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+.icon-btn-small {
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: 6px 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn-small:hover {
+    background: var(--secondary);
+    color: white;
+}
+
+/* ===== BADGE PÚBLICO ===== */
+.public-badge {
+    display: inline-block;
+    background: #E8F5E9;
+    color: #2E7D32;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* ===== RESPONSIVE COMUNIDAD ===== */
+@media (max-width: 600px) {
+    .community-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .bottom-nav {
+        height: 56px;
+    }
+
+    .nav-item {
+        font-size: 10px;
+        padding: 4px 12px;
+    }
+
+    .nav-item svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .search-box input {
+        width: 100px;
+        font-size: 13px;
+    }
+
+    .community-card {
+        padding: 14px 16px;
+    }
+
+    .community-actions button {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-box input {
+        width: 80px;
+    }
+}
