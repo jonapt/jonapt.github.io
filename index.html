@@ -99,13 +99,6 @@
                     <span class="brand-text">Setlify</span>
                 </div>
                 <div class="app-bar-actions">
-                    <!-- <button id="btnNotifications" class="icon-btn notification-btn" title="Notificaciones">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                        </svg>
-                        <span id="notificationBadge" class="notification-badge" style="display:none;">0</span>
-                    </button> -->
                     <div id="userProfile" class="user-profile">
                         <div id="userAvatar" class="user-avatar">J</div>
                         <span id="userDisplayName" class="user-name"></span>
@@ -245,13 +238,24 @@
             <section id="groups-view" class="view active">
                 <div class="view-header">
                     <h2>Grupos de Alabanza</h2>
-                    <button id="btnAddGroup" class="primary-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Nuevo Grupo
-                    </button>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="btnJoinGroup" class="primary-btn" style="background: #25D366;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="8.5" cy="7" r="4"/>
+                                <line x1="20" y1="8" x2="20" y2="14"/>
+                                <line x1="23" y1="11" x2="17" y2="11"/>
+                            </svg>
+                            Unirse
+                        </button>
+                        <button id="btnAddGroup" class="primary-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Nuevo Grupo
+                        </button>
+                    </div>
                 </div>
                 <div id="groups-list" class="groups-grid"></div>
             </section>
@@ -267,7 +271,15 @@
                     </button>
                     <h2 id="group-title">Grupo</h2>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <!-- <button id="btnInviteMember" class="primary-btn small" style="background: #F57C00;">
+                        <button id="btnShareInvite" class="primary-btn small" style="background: #25D366;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                                <polyline points="16 6 12 2 8 6"/>
+                                <line x1="12" y1="2" x2="12" y2="15"/>
+                            </svg>
+                            Compartir
+                        </button>
+                        <button id="btnInviteMember" class="primary-btn small" style="background: #F57C00;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                                 <circle cx="8.5" cy="7" r="4"/>
@@ -275,7 +287,7 @@
                                 <line x1="23" y1="11" x2="17" y2="11"/>
                             </svg>
                             Invitar
-                        </button> -->
+                        </button>
                         <button id="btnAddGroupSetlist" class="primary-btn small">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="12" y1="5" x2="12" y2="19"/>
@@ -310,8 +322,26 @@
                                 <span class="stat-label">Canciones</span>
                             </div>
                         </div>
+                        <div class="invite-code-section">
+                            <span class="invite-code-label">Código:</span>
+                            <span class="invite-code" id="groupInviteCode">XXXX-XXXX</span>
+                            <button id="btnCopyInviteCode" class="icon-btn small" title="Copiar código">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div id="groupDescription" class="group-description-text"></div>
+                </div>
+
+                <!-- Solicitudes Pendientes -->
+                <div id="pendingRequestsSection" class="group-section" style="display:none;">
+                    <div class="section-header">
+                        <h3>Solicitudes Pendientes</h3>
+                    </div>
+                    <div id="pendingRequests" class="members-container"></div>
                 </div>
 
                 <div class="group-section">
@@ -321,7 +351,7 @@
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                                 <circle cx="8.5" cy="7" r="4"/>
-                                <!-- <line x1="20" y1="8" x2="20" y2="14"/> -->
+                                <line x1="20" y1="8" x2="20" y2="14"/>
                                 <line x1="23" y1="11" x2="17" y2="11"/>
                             </svg>
                             Invitar
@@ -432,17 +462,6 @@
                 <div id="public-lyrics-content" class="lyrics-content"></div>
             </section>
         </main>
-
-        <!-- Modal de Notificaciones -->
-        <div id="notificationModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Notificaciones</h3>
-                    <button class="modal-close-btn" onclick="UI.closeModal()">✕</button>
-                </div>
-                <div id="notifications-list" class="notifications-list"></div>
-            </div>
-        </div>
 
         <!-- Modal General -->
         <div id="modal" class="modal">
@@ -558,21 +577,36 @@
                 this.setlists = [];
                 this.createdBy = null;
                 this.createdAt = new Date().toISOString();
-                this.invitedMembers = [];
+                this.inviteCode = this.generateInviteCode();
+                this.pendingRequests = [];
+            }
+
+            generateInviteCode() {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let code = '';
+                for (let i = 0; i < 8; i++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return code;
             }
 
             addMember(email) {
                 if (!this.members.includes(email)) {
                     this.members.push(email);
                 }
-                if (this.invitedMembers.includes(email)) {
-                    this.invitedMembers = this.invitedMembers.filter(m => m !== email);
-                }
+                this.pendingRequests = this.pendingRequests.filter(m => m !== email);
                 return this;
             }
 
             removeMember(email) {
                 this.members = this.members.filter(m => m !== email);
+                return this;
+            }
+
+            addPendingRequest(email) {
+                if (!this.pendingRequests.includes(email) && !this.members.includes(email)) {
+                    this.pendingRequests.push(email);
+                }
                 return this;
             }
 
@@ -609,7 +643,8 @@
                     setlists: this.setlists.map(s => s.toJSON()),
                     createdBy: this.createdBy,
                     createdAt: this.createdAt,
-                    invitedMembers: this.invitedMembers || []
+                    inviteCode: this.inviteCode,
+                    pendingRequests: this.pendingRequests || []
                 };
             }
 
@@ -619,66 +654,9 @@
                 group.setlists = (data.setlists || []).map(s => SetList.fromJSON(s));
                 group.createdBy = data.createdBy || null;
                 group.createdAt = data.createdAt || new Date().toISOString();
-                group.invitedMembers = data.invitedMembers || [];
+                group.inviteCode = data.inviteCode || group.generateInviteCode();
+                group.pendingRequests = data.pendingRequests || [];
                 return group;
-            }
-        }
-
-        // ============================================
-        // NOTIFICATIONS SYSTEM
-        // ============================================
-        class NotificationManager {
-            constructor() {
-                this.notifications = [];
-                this.listeners = [];
-            }
-
-            addNotification(message, type = 'info', data = null) {
-                const notification = {
-                    id: crypto.randomUUID(),
-                    message: message,
-                    type: type,
-                    data: data,
-                    read: false,
-                    createdAt: new Date().toISOString()
-                };
-                this.notifications.unshift(notification);
-                this.notifyListeners();
-                return notification;
-            }
-
-            markAsRead(id) {
-                const notif = this.notifications.find(n => n.id === id);
-                if (notif) {
-                    notif.read = true;
-                    this.notifyListeners();
-                }
-            }
-
-            markAllAsRead() {
-                this.notifications.forEach(n => n.read = true);
-                this.notifyListeners();
-            }
-
-            getUnreadCount() {
-                return this.notifications.filter(n => !n.read).length;
-            }
-
-            getAll() {
-                return this.notifications;
-            }
-
-            addListener(callback) {
-                this.listeners.push(callback);
-            }
-
-            notifyListeners() {
-                this.listeners.forEach(cb => cb(this.notifications));
-            }
-
-            clear() {
-                this.notifications = [];
-                this.notifyListeners();
             }
         }
 
@@ -763,6 +741,89 @@
                 } catch (error) {
                     console.error('Error obteniendo grupo:', error);
                     return null;
+                }
+            }
+
+            static async findGroupByInviteCode(inviteCode) {
+                try {
+                    const snapshot = await db.collection('groups')
+                        .where('inviteCode', '==', inviteCode)
+                        .get();
+                    
+                    if (!snapshot.empty) {
+                        const doc = snapshot.docs[0];
+                        return Group.fromJSON(doc.data());
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error buscando grupo por código:', error);
+                    return null;
+                }
+            }
+
+            static async joinGroupByInviteCode(inviteCode, userEmail) {
+                try {
+                    const snapshot = await db.collection('groups')
+                        .where('inviteCode', '==', inviteCode)
+                        .get();
+                    
+                    if (snapshot.empty) {
+                        return { success: false, error: 'Código de invitación no válido' };
+                    }
+
+                    const doc = snapshot.docs[0];
+                    const group = Group.fromJSON(doc.data());
+                    
+                    if (group.members.includes(userEmail)) {
+                        return { success: false, error: 'Ya eres miembro de este grupo' };
+                    }
+
+                    // Si ya tiene solicitud pendiente
+                    if (group.pendingRequests.includes(userEmail)) {
+                        return { success: false, error: 'Ya tienes una solicitud pendiente' };
+                    }
+
+                    // Agregar a solicitudes pendientes
+                    group.addPendingRequest(userEmail);
+                    await db.collection('groups').doc(group.id).set(group.toJSON());
+                    return { success: true, group: group, pending: true };
+                } catch (error) {
+                    console.error('Error uniéndose al grupo:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            static async approveMember(groupId, userEmail) {
+                try {
+                    const doc = await db.collection('groups').doc(groupId).get();
+                    if (!doc.exists) {
+                        return { success: false, error: 'Grupo no encontrado' };
+                    }
+
+                    const group = Group.fromJSON(doc.data());
+                    group.addMember(userEmail);
+                    await db.collection('groups').doc(groupId).set(group.toJSON());
+                    return { success: true, group: group };
+                } catch (error) {
+                    console.error('Error aprobando miembro:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            static async rejectMember(groupId, userEmail) {
+                try {
+                    const doc = await db.collection('groups').doc(groupId).get();
+                    if (!doc.exists) {
+                        return { success: false, error: 'Grupo no encontrado' };
+                    }
+
+                    const group = Group.fromJSON(doc.data());
+                    group.pendingRequests = group.pendingRequests.filter(m => m !== userEmail);
+                    await db.collection('groups').doc(groupId).set(group.toJSON());
+                    return { success: true };
+                } catch (error) {
+                    console.error('Error rechazando miembro:', error);
+                    return { success: false, error: error.message };
                 }
             }
 
@@ -946,7 +1007,6 @@
 
             static closeModal() {
                 document.getElementById('modal').classList.remove('active');
-                document.getElementById('notificationModal')?.classList.remove('active');
             }
 
             static escapeHtml(text) {
@@ -1086,7 +1146,7 @@
                 if (groups.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p class="empty-message">No estás en ningún grupo.<br>Crea un grupo o espera una invitación</p>
+                            <p class="empty-message">No estás en ningún grupo.<br>Crea un grupo o usa el código de invitación</p>
                         </div>
                     `;
                     return;
@@ -1131,16 +1191,40 @@
                 document.getElementById('groupSetlistCount').textContent = group.setlists.length;
                 document.getElementById('groupSongCount').textContent = group.getTotalSongs();
 
+                // Código de invitación
+                const inviteCodeEl = document.getElementById('groupInviteCode');
+                if (inviteCodeEl) {
+                    inviteCodeEl.textContent = group.inviteCode || 'N/A';
+                }
+
                 const descContainer = document.getElementById('groupDescription');
                 if (descContainer) {
                     descContainer.textContent = group.description || 'Sin descripción';
                 }
 
+                // Solicitudes pendientes (solo para el creador)
+                const currentUserEmail = window.app?.auth?.getUser()?.email;
+                const isCreator = currentUserEmail === group.members[0];
+                const pendingSection = document.getElementById('pendingRequestsSection');
+                const pendingContainer = document.getElementById('pendingRequests');
+
+                if (isCreator && group.pendingRequests && group.pendingRequests.length > 0) {
+                    pendingSection.style.display = 'block';
+                    pendingContainer.innerHTML = group.pendingRequests.map(email => `
+                        <div class="request-chip">
+                            <span class="member-avatar">${email.charAt(0).toUpperCase()}</span>
+                            <span class="member-email">${UI.escapeHtml(email)}</span>
+                            <button class="btn-approve-request" data-email="${email}" title="Aceptar">✓</button>
+                            <button class="btn-reject-request" data-email="${email}" title="Rechazar">✕</button>
+                        </div>
+                    `).join('');
+                } else {
+                    pendingSection.style.display = 'none';
+                }
+
+                // Miembros
                 const membersContainer = document.getElementById('group-members');
                 if (membersContainer) {
-                    const currentUserEmail = window.app?.auth?.getUser()?.email;
-                    const isCreator = currentUserEmail === group.members[0];
-                    
                     if (group.members.length === 0) {
                         membersContainer.innerHTML = `
                             <div class="empty-state small">
@@ -1315,42 +1399,6 @@
                 if (!container) return;
                 container.textContent = song.lyrics || 'No hay letra disponible.';
             }
-
-            static renderNotifications(notifications) {
-                const container = document.getElementById('notifications-list');
-                if (!container) return;
-
-                if (notifications.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state small">
-                            <p class="empty-message">No hay notificaciones</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = notifications.map(notif => `
-                    <div class="notification-item ${notif.read ? 'read' : 'unread'}">
-                        <div class="notification-content">
-                            <p>${UI.escapeHtml(notif.message)}</p>
-                            <span class="notification-time">${new Date(notif.createdAt).toLocaleString()}</span>
-                        </div>
-                        ${!notif.read ? `<button class="btn-mark-read" data-id="${notif.id}">✓</button>` : ''}
-                    </div>
-                `).join('');
-            }
-
-            static updateNotificationBadge(count) {
-                const badge = document.getElementById('notificationBadge');
-                if (!badge) return;
-
-                if (count > 0) {
-                    badge.style.display = 'flex';
-                    badge.textContent = count > 99 ? '99+' : count;
-                } else {
-                    badge.style.display = 'none';
-                }
-            }
         }
 
         // ============================================
@@ -1446,7 +1494,6 @@
         class SetlifyApp {
             constructor() {
                 this.auth = new AuthManager();
-                this.notificationManager = new NotificationManager();
                 this.setlists = [];
                 this.groups = [];
                 this.currentSetlistId = null;
@@ -1457,11 +1504,6 @@
                 this.publicSetlists = [];
                 this.currentPublicSetlist = null;
                 this.currentPublicSongIndex = null;
-                
-                this.notificationManager.addListener((notifications) => {
-                    UI.renderNotifications(notifications);
-                    UI.updateNotificationBadge(this.notificationManager.getUnreadCount());
-                });
                 
                 this.auth.onAuthStateChanged((user) => {
                     if (user) {
@@ -1479,6 +1521,16 @@
             init() {
                 this.setupEventListeners();
                 this.showLoginScreen();
+                
+                // Verificar código de invitación en URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const inviteCode = urlParams.get('invite');
+                if (inviteCode) {
+                    setTimeout(() => {
+                        this.joinGroupByCode(inviteCode);
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }, 2000);
+                }
             }
 
             setupEventListeners() {
@@ -1535,22 +1587,6 @@
                     });
                 });
 
-                // Notificaciones
-                document.getElementById('btnNotifications')?.addEventListener('click', () => {
-                    const modal = document.getElementById('notificationModal');
-                    if (modal) {
-                        modal.classList.add('active');
-                        this.notificationManager.markAllAsRead();
-                    }
-                });
-
-                document.getElementById('notifications-list')?.addEventListener('click', (e) => {
-                    const markBtn = e.target.closest('.btn-mark-read');
-                    if (markBtn) {
-                        this.notificationManager.markAsRead(markBtn.dataset.id);
-                    }
-                });
-
                 // SET LISTS
                 document.getElementById('btnAddSetlist')?.addEventListener('click', () => {
                     this.showAddSetlistModal();
@@ -1591,6 +1627,18 @@
                 // GRUPOS
                 document.getElementById('btnAddGroup')?.addEventListener('click', () => {
                     this.showAddGroupModal();
+                });
+
+                document.getElementById('btnJoinGroup')?.addEventListener('click', () => {
+                    this.showJoinGroupModal();
+                });
+
+                document.getElementById('btnShareInvite')?.addEventListener('click', () => {
+                    this.shareInvite();
+                });
+
+                document.getElementById('btnCopyInviteCode')?.addEventListener('click', () => {
+                    this.copyInviteCode();
                 });
 
                 document.getElementById('btnInviteMember')?.addEventListener('click', () => {
@@ -1663,12 +1711,6 @@
 
                 // Modal
                 document.getElementById('modal')?.addEventListener('click', (e) => {
-                    if (e.target === e.currentTarget) {
-                        UI.closeModal();
-                    }
-                });
-
-                document.getElementById('notificationModal')?.addEventListener('click', (e) => {
                     if (e.target === e.currentTarget) {
                         UI.closeModal();
                     }
@@ -1756,6 +1798,22 @@
                     const inviteBtn = e.target.closest('#btnInviteMemberInline');
                     if (inviteBtn) {
                         this.showInviteMemberModal();
+                    }
+                });
+
+                document.getElementById('pendingRequests')?.addEventListener('click', (e) => {
+                    const approveBtn = e.target.closest('.btn-approve-request');
+                    if (approveBtn) {
+                        e.stopPropagation();
+                        this.approveMember(approveBtn.dataset.email);
+                        return;
+                    }
+
+                    const rejectBtn = e.target.closest('.btn-reject-request');
+                    if (rejectBtn) {
+                        e.stopPropagation();
+                        this.rejectMember(rejectBtn.dataset.email);
+                        return;
                     }
                 });
 
@@ -1909,8 +1967,6 @@
                 try {
                     this.groups = await StorageManager.loadGroups(user.email);
                     this.renderGroups();
-                    
-                    this.checkGroupNotifications();
                 } catch (error) {
                     console.error('Error cargando grupos:', error);
                     UI.showToast('Error cargando grupos');
@@ -1923,31 +1979,6 @@
                     await this.loadGroups();
                 }
                 return result;
-            }
-
-            async deleteGroupFromFirebase(groupId) {
-                const result = await StorageManager.deleteGroup(groupId);
-                if (result.success) {
-                    await this.loadGroups();
-                }
-                return result;
-            }
-
-            checkGroupNotifications() {
-                const userEmail = this.auth.getUser()?.email;
-                this.groups.forEach(group => {
-                    group.setlists.forEach(setlist => {
-                        const notifKey = `notif_${group.id}_${setlist.id}`;
-                        if (!localStorage.getItem(notifKey)) {
-                            this.notificationManager.addNotification(
-                                `📋 Nuevo set list "${setlist.name}" en el grupo "${group.name}"`,
-                                'info',
-                                { groupId: group.id, setlistId: setlist.id }
-                            );
-                            localStorage.setItem(notifKey, 'true');
-                        }
-                    });
-                });
             }
 
             renderGroups() {
@@ -2011,6 +2042,224 @@
                 UI.showView('group-lyrics-view');
             }
 
+            // ===== UNIRSE POR CÓDIGO =====
+
+            showJoinGroupModal() {
+                UI.showModal(
+                    'Unirse a grupo',
+                    [
+                        { 
+                            id: 'inviteCodeInput', 
+                            label: 'Código de invitación', 
+                            type: 'text', 
+                            placeholder: 'Ej: ABC12345',
+                            required: true,
+                            value: ''
+                        }
+                    ],
+                    async (data) => {
+                        const code = data.inviteCodeInput?.trim().toUpperCase() || '';
+                        if (!code) {
+                            UI.showToast('Por favor ingresa un código');
+                            return;
+                        }
+                        UI.closeModal();
+                        await this.joinGroupByCode(code);
+                    },
+                    'Unirse'
+                );
+            }
+
+            async joinGroupByCode(inviteCode) {
+                const user = this.auth.getUser();
+                if (!user) {
+                    UI.showToast('Debes iniciar sesión para unirte a un grupo');
+                    return;
+                }
+
+                UI.showToast('🔍 Buscando grupo...');
+                
+                const result = await StorageManager.joinGroupByInviteCode(inviteCode, user.email);
+                
+                if (result.success) {
+                    if (result.pending) {
+                        UI.showToast(`✅ Solicitud enviada a "${result.group.name}"`);
+                    } else {
+                        UI.showToast(`✅ Te has unido a "${result.group.name}"`);
+                    }
+                    await this.loadGroups();
+                    UI.showView('groups-view');
+                } else {
+                    UI.showToast('❌ ' + result.error);
+                }
+            }
+
+            // ===== COMPARTIR INVITACIÓN =====
+
+            shareInvite() {
+                const group = this.getCurrentGroup();
+                if (!group) {
+                    UI.showToast('No hay grupo seleccionado');
+                    return;
+                }
+
+                const inviteCode = group.inviteCode || 'N/A';
+                const inviteLink = `${window.location.origin}${window.location.pathname}?invite=${inviteCode}`;
+                const inviteText = `🎵 ¡Únete a "${group.name}" en Setlify!\n\n` +
+                                   `Código: ${inviteCode}\n` +
+                                   `Enlace: ${inviteLink}\n\n` +
+                                   `¡Te esperamos!`;
+
+                if (navigator.share) {
+                    navigator.share({
+                        title: `Invitación a ${group.name}`,
+                        text: inviteText,
+                    }).catch(() => {});
+                    return;
+                }
+
+                navigator.clipboard.writeText(inviteText).then(() => {
+                    UI.showToast('📋 Invitación copiada');
+                }).catch(() => {
+                    UI.showModal(
+                        'Compartir invitación',
+                        [
+                            { 
+                                id: 'inviteText', 
+                                label: 'Copia este mensaje y compártelo', 
+                                type: 'textarea', 
+                                value: inviteText,
+                                rows: 6
+                            }
+                        ],
+                        (data) => {
+                            navigator.clipboard.writeText(data.inviteText);
+                            UI.showToast('📋 Texto copiado');
+                            UI.closeModal();
+                        },
+                        'Copiar'
+                    );
+                });
+            }
+
+            copyInviteCode() {
+                const group = this.getCurrentGroup();
+                if (!group) {
+                    UI.showToast('No hay grupo seleccionado');
+                    return;
+                }
+
+                const inviteCode = group.inviteCode || 'N/A';
+                navigator.clipboard.writeText(inviteCode).then(() => {
+                    UI.showToast('📋 Código copiado: ' + inviteCode);
+                }).catch(() => {
+                    UI.showToast('Código: ' + inviteCode);
+                });
+            }
+
+            // ===== APROBAR/RECHAZAR SOLICITUDES =====
+
+            async approveMember(email) {
+                const group = this.getCurrentGroup();
+                if (!group) return;
+
+                UI.showConfirm(
+                    `¿Aceptar a "${email}" en el grupo?`,
+                    async () => {
+                        const result = await StorageManager.approveMember(group.id, email);
+                        if (result.success) {
+                            UI.showToast(`✅ ${email} ha sido aceptado`);
+                            await this.openGroup(group.id);
+                        } else {
+                            UI.showToast('❌ Error: ' + result.error);
+                        }
+                    }
+                );
+            }
+
+            async rejectMember(email) {
+                const group = this.getCurrentGroup();
+                if (!group) return;
+
+                UI.showConfirm(
+                    `¿Rechazar la solicitud de "${email}"?`,
+                    async () => {
+                        const result = await StorageManager.rejectMember(group.id, email);
+                        if (result.success) {
+                            UI.showToast(`❌ Solicitud de ${email} rechazada`);
+                            await this.openGroup(group.id);
+                        } else {
+                            UI.showToast('❌ Error: ' + result.error);
+                        }
+                    }
+                );
+            }
+
+            // ===== INVITAR POR EMAIL =====
+
+            showInviteMemberModal() {
+                const group = this.getCurrentGroup();
+                if (!group) {
+                    UI.showToast('No hay grupo seleccionado');
+                    return;
+                }
+
+                UI.showModal(
+                    'Invitar Miembro por Email',
+                    [
+                        { 
+                            id: 'memberEmail', 
+                            label: 'Correo electrónico', 
+                            type: 'email', 
+                            placeholder: 'ejemplo@dominio.com', 
+                            required: true,
+                            value: ''
+                        }
+                    ],
+                    async (data) => {
+                        const email = data.memberEmail?.trim() || '';
+                        if (!email) {
+                            UI.showToast('Por favor ingresa un email');
+                            return;
+                        }
+                        if (group.members.includes(email)) {
+                            UI.showToast('Este miembro ya está en el grupo');
+                            return;
+                        }
+                        
+                        // Enviar invitación por email (código)
+                        const inviteCode = group.inviteCode || 'N/A';
+                        const message = `Has sido invitado a "${group.name}" en Setlify.\nCódigo: ${inviteCode}`;
+                        
+                        // Aquí se podría enviar email real con Firebase Functions
+                        // Por ahora solo mostramos el código
+                        UI.showToast(`📧 Invitación enviada a ${email}`);
+                        UI.closeModal();
+                        
+                        // Notificar al usuario invitado
+                        UI.showModal(
+                            'Invitación enviada',
+                            [
+                                { 
+                                    id: 'inviteMessage', 
+                                    label: 'Comparte este código con el invitado', 
+                                    type: 'textarea', 
+                                    value: message,
+                                    rows: 4
+                                }
+                            ],
+                            (data) => {
+                                navigator.clipboard.writeText(data.inviteMessage);
+                                UI.showToast('📋 Código copiado');
+                                UI.closeModal();
+                            },
+                            'Copiar código'
+                        );
+                    },
+                    'Enviar invitación'
+                );
+            }
+
             // ===== MODALES DE GRUPOS =====
 
             showAddGroupModal() {
@@ -2064,96 +2313,6 @@
                 );
             }
 
-            showInviteMemberModal() {
-                const group = this.getCurrentGroup();
-                if (!group) {
-                    UI.showToast('No hay grupo seleccionado');
-                    return;
-                }
-
-                UI.showModal(
-                    'Invitar Miembro',
-                    [
-                        { 
-                            id: 'memberEmail', 
-                            label: 'Correo electrónico', 
-                            type: 'email', 
-                            placeholder: 'ejemplo@dominio.com', 
-                            required: true,
-                            value: ''
-                        }
-                    ],
-                    async (data) => {
-                        const email = data.memberEmail?.trim() || '';
-                        if (!email) {
-                            UI.showToast('Por favor ingresa un email');
-                            return;
-                        }
-                        if (group.members.includes(email)) {
-                            UI.showToast('Este miembro ya está en el grupo');
-                            return;
-                        }
-                        group.addMember(email);
-                        const result = await this.saveGroup(group);
-                        if (result.success) {
-                            this.renderCurrentGroupDetail();
-                            UI.closeModal();
-                            UI.showToast(`Invitación enviada a ${email}`);
-                            
-                            this.notificationManager.addNotification(
-                                `📩 Has sido invitado al grupo "${group.name}"`,
-                                'info',
-                                { groupId: group.id }
-                            );
-                        } else {
-                            UI.showToast('Error al invitar: ' + result.error);
-                        }
-                    },
-                    'Invitar'
-                );
-            }
-
-            async removeMember(email) {
-                const group = this.getCurrentGroup();
-                if (!group) return;
-
-                UI.showConfirm(
-                    `¿Eliminar a "${email}" del grupo?`,
-                    async () => {
-                        group.removeMember(email);
-                        const result = await this.saveGroup(group);
-                        if (result.success) {
-                            this.renderCurrentGroupDetail();
-                            UI.showToast('Miembro eliminado');
-                        } else {
-                            UI.showToast('Error al eliminar miembro');
-                        }
-                    }
-                );
-            }
-
-            async leaveGroup(groupId) {
-                const group = this.groups.find(g => g.id === groupId);
-                if (!group) return;
-
-                UI.showConfirm(
-                    `¿Salir del grupo "${group.name}"?`,
-                    async () => {
-                        const userEmail = this.auth.getUser()?.email;
-                        if (userEmail) {
-                            group.removeMember(userEmail);
-                            const result = await this.saveGroup(group);
-                            if (result.success) {
-                                await this.loadGroups();
-                                UI.showToast(`Has salido del grupo "${group.name}"`);
-                            } else {
-                                UI.showToast('Error al salir del grupo');
-                            }
-                        }
-                    }
-                );
-            }
-
             showAddGroupSetlistModal() {
                 const group = this.getCurrentGroup();
                 if (!group) {
@@ -2198,17 +2357,6 @@
                             this.renderCurrentGroupDetail();
                             UI.closeModal();
                             UI.showToast(`Set List "${setlist.name}" agregado al grupo`);
-                            
-                            const userEmail = this.auth.getUser()?.email;
-                            group.members.forEach(memberEmail => {
-                                if (memberEmail !== userEmail) {
-                                    this.notificationManager.addNotification(
-                                        `📋 Nuevo set list "${setlist.name}" en el grupo "${group.name}"`,
-                                        'info',
-                                        { groupId: group.id, setlistId: setlist.id }
-                                    );
-                                }
-                            });
                         } else {
                             UI.showToast('Error al crear set list: ' + result.error);
                         }
@@ -2376,6 +2524,47 @@
                             UI.showToast('Set list eliminado del grupo');
                         } else {
                             UI.showToast('Error al eliminar set list');
+                        }
+                    }
+                );
+            }
+
+            async leaveGroup(groupId) {
+                const group = this.groups.find(g => g.id === groupId);
+                if (!group) return;
+
+                UI.showConfirm(
+                    `¿Salir del grupo "${group.name}"?`,
+                    async () => {
+                        const userEmail = this.auth.getUser()?.email;
+                        if (userEmail) {
+                            group.removeMember(userEmail);
+                            const result = await this.saveGroup(group);
+                            if (result.success) {
+                                await this.loadGroups();
+                                UI.showToast(`Has salido del grupo "${group.name}"`);
+                            } else {
+                                UI.showToast('Error al salir del grupo');
+                            }
+                        }
+                    }
+                );
+            }
+
+            async removeMember(email) {
+                const group = this.getCurrentGroup();
+                if (!group) return;
+
+                UI.showConfirm(
+                    `¿Eliminar a "${email}" del grupo?`,
+                    async () => {
+                        group.removeMember(email);
+                        const result = await this.saveGroup(group);
+                        if (result.success) {
+                            this.renderCurrentGroupDetail();
+                            UI.showToast('Miembro eliminado');
+                        } else {
+                            UI.showToast('Error al eliminar miembro');
                         }
                     }
                 );

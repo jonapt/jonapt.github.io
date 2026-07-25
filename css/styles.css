@@ -1532,3 +1532,136 @@ body {
         transform: translateX(18px);
     }
 }
+
+/* ============================================
+   SOLICITUDES PENDIENTES
+   ============================================ */
+.request-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--warning-bg);
+    padding: 4px 12px 4px 8px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--text-primary);
+    border: 1px solid var(--warning);
+}
+
+.request-chip .btn-approve-request {
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.request-chip .btn-approve-request:hover {
+    background: #1B5E20;
+    transform: scale(1.05);
+}
+
+.request-chip .btn-reject-request {
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.request-chip .btn-reject-request:hover {
+    background: #B71C1C;
+    transform: scale(1.05);
+}
+
+/* ============================================
+   CÓDIGO DE INVITACIÓN
+   ============================================ */
+.invite-code-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--accent);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--divider);
+    flex-wrap: wrap;
+}
+
+.invite-code-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.invite-code {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: monospace;
+    letter-spacing: 1px;
+    background: var(--surface);
+    padding: 2px 12px;
+    border-radius: 4px;
+}
+
+.invite-code-section .icon-btn.small {
+    padding: 4px;
+    min-height: 28px;
+    min-width: 28px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: var(--radius);
+}
+
+.invite-code-section .icon-btn.small:hover {
+    background: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.invite-code-section .icon-btn.small:hover svg {
+    stroke: white;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 600px) {
+    .invite-code-section {
+        padding: 6px 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .invite-code {
+        font-size: 14px;
+        padding: 2px 8px;
+    }
+
+    .request-chip {
+        font-size: 12px;
+        padding: 3px 10px 3px 6px;
+    }
+
+    .request-chip .btn-approve-request,
+    .request-chip .btn-reject-request {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+}
+
